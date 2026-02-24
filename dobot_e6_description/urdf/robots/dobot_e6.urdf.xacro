@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="dobot_e6">
+    <xacro:arg name="robot_name" default="dobot_e6"/>
+    <xacro:arg name="add_world" default="true"/>
+    <xacro:arg name="use_gripper" default="true"/>
+    <xacro:arg name="prefix" default=""/>
+
+    <xacro:if value="$(arg add_world)">
+      <link name="world"/>
+      <joint name="$(arg prefix)virtual_joint" type="fixed">
+          <parent link="world"/>
+          <child link="base_link"/>
+          <origin xyz="0 0 0.03886" rpy="0 0 0"/>
+      </joint>
+    </xacro:if>
+
+    <xacro:include filename="$(find dobot_e6_description)/urdf/mech/base_link.urdf.xacro"/>
+    <xacro:base_link
+        prefix="$(arg prefix)"/>
+
+    <xacro:include filename="$(find dobot_e6_description)/urdf/mech/dobot_e6_arm.urdf.xacro"/>  
+    <xacro:dobot_e6_arm
+        prefix="$(arg prefix)"/>
+    
+    
+</robot>
