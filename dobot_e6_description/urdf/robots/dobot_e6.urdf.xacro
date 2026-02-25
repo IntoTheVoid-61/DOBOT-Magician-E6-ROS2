@@ -10,7 +10,8 @@
       <joint name="$(arg prefix)virtual_joint" type="fixed">
           <parent link="world"/>
           <child link="base_link"/>
-          <origin xyz="0 0 0.03886" rpy="0 0 0"/>
+          <!--origin xyz="0 0 0.03886" rpy="0 0 0"/-->
+          <origin xyz="0.062 0.0863 0.052" rpy="0 0 0"/>
       </joint>
     </xacro:if>
 
