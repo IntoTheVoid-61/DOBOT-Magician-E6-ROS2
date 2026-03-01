@@ -9,15 +9,14 @@
                 </geometry>
             </visual>
             <collision>
-                <origin xyz="0 0 0.01749" rpy="0 0 0"/>
+                <origin xyz="0 -0.02087 0.00185" rpy="0 0 0"/>
                 <geometry>
-                    <box size="0.150 0.2 0.0"/>
+                    <box size="0.140 0.2 0.1077"/>
                 </geometry>
             </collision>
             <inertial>
                 <!-- TODO-->
                 <!-- Based on the actual mass we need to update the inertial section-->
-                <!-- stl frame/link frame is equal to the COM (defined in CAD) therefore, origin is a zero vector-->
                 <mass value="1.0" />
                 <origin xyz="0 0 0" rpy="0 0 0"/>
                 <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0" />

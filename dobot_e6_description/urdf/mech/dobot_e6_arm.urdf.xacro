@@ -39,9 +39,9 @@
                 </geometry>
             </visual>
             <collision>
-                <origin xyz="0 0 0" rpy="0 0 0" />
+                <origin xyz="0 0.01025 -0.00145" rpy="0 0 0" />
                 <geometry>
-                    <box size="0 0 0"/>
+                    <box size="0.100 0.090 0.085"/>
                 </geometry>
             </collision>
         </link>
@@ -58,9 +58,9 @@
                 </geometry>
             </visual>
             <collision>
-                <origin xyz="0 0 0" rpy="0 0 0" />
+                <origin xyz="0 -0.09375 0.00283" rpy="0 0 0" />
                 <geometry>
-                    <box size="0 0 0"/>
+                    <box size="0.080 0.267 0.080"/>
                 </geometry>
             </collision>
         </link>
@@ -68,7 +68,7 @@
         <link name="${prefix}link3">
             <!-- TODO: Fix inertial-->
              <!-- TODO: Fix inertial origin-->
-            <xacro:link_inertial mass="${link2_mass}" ixx="0.000148" iyy="0.000148" izz="0.000096"/>
+            <xacro:link_inertial mass="${link3_mass}" ixx="0.000148" iyy="0.000148" izz="0.000096"/>
             <visual>
                 <origin xyz="0 0 0" rpy="0 0 0" />
                 <geometry>
@@ -76,9 +76,9 @@
                 </geometry>
             </visual>
             <collision>
-                <origin xyz="0 0 0" rpy="0 0 0" />
+                <origin xyz="0 -0.080 0.00283" rpy="0 0 0" />
                 <geometry>
-                    <box size="0 0 0"/>
+                    <box size="0.080 0.230 0.080"/>
                 </geometry>
             </collision>
         </link>
@@ -86,7 +86,7 @@
         <link name="${prefix}link4">
             <!-- TODO: Fix inertial-->
              <!-- TODO: Fix inertial origin-->
-            <xacro:link_inertial mass="${link2_mass}" ixx="0.000148" iyy="0.000148" izz="0.000096"/>
+            <xacro:link_inertial mass="${link4_mass}" ixx="0.000148" iyy="0.000148" izz="0.000096"/>
             <visual>
                 <origin xyz="0 0 0" rpy="0 0 0" />
                 <geometry>
@@ -94,9 +94,9 @@
                 </geometry>
             </visual>
             <collision>
-                <origin xyz="0 0 0" rpy="0 0 0" />
+                <origin xyz="0 -0.0085 -0.0055" rpy="0 0 0" />
                 <geometry>
-                    <box size="0 0 0"/>
+                    <box size="0.065 0.087 0.077"/>
                 </geometry>
             </collision>
         </link>
@@ -104,7 +104,7 @@
         <link name="${prefix}link5">
             <!-- TODO: Fix inertial-->
              <!-- TODO: Fix inertial origin-->
-            <xacro:link_inertial mass="${link2_mass}" ixx="0.000148" iyy="0.000148" izz="0.000096"/>
+            <xacro:link_inertial mass="${link5_mass}" ixx="0.000148" iyy="0.000148" izz="0.000096"/>
             <visual>
                 <origin xyz="0 0 0" rpy="0 0 0" />
                 <geometry>
@@ -112,9 +112,9 @@
                 </geometry>
             </visual>
             <collision>
-                <origin xyz="0 0 0" rpy="0 0 0" />
+                <origin xyz="0 0.00965 -0.00825" rpy="0 0 0" />
                 <geometry>
-                    <box size="0 0 0"/>
+                    <box size="0.065 0.109 0.0815"/>
                 </geometry>
             </collision>
         </link>
@@ -123,7 +123,7 @@
         <link name="${prefix}flange">
             <!-- TODO: Fix inertial-->
              <!-- TODO: Fix inertial origin-->
-            <xacro:link_inertial mass="${link2_mass}" ixx="0.000148" iyy="0.000148" izz="0.000096"/>
+            <xacro:link_inertial mass="${flange_mass}" ixx="0.000148" iyy="0.000148" izz="0.000096"/>
             <visual>
                 <origin xyz="0 0 0" rpy="0 0 0" />
                 <geometry>
@@ -133,7 +133,7 @@
             <collision>
                 <origin xyz="0 0 0" rpy="0 0 0" />
                 <geometry>
-                    <box size="0 0 0"/>
+                    <cylinder radius="0.0400" length="0.021"/>
                 </geometry>
             </collision>
         </link>
@@ -183,7 +183,8 @@
         <joint name="${prefix}link5_to_${prefix}flange" type="revolute">
             <parent link="${prefix}link5" />
             <child link="${prefix}flange" />
-            <origin xyz="-0.00362 -0.05989 0" rpy="${pi/2} 0 0" />
+            <!--origin xyz="-0.00362 -0.05989 0" rpy="${pi/2} 0 0" /-->
+            <origin xyz="0 -0.05989 0" rpy="${pi/2} 0 0" />
             <axis xyz="0 0 1" />
             <limit effort="${joint_effort}" lower="-2.879793" upper="2.879793" velocity="${joint_velocity}"/>
         </joint>
