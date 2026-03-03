@@ -8,13 +8,13 @@ from launch_ros.parameter_descriptions import ParameterValue
 from launch.conditions import IfCondition, UnlessCondition
 
 """ 
-This Launch file handles the launching of RVIZ visualization of the mobile robot.
+This Launch file handles the launching of RVIZ visualization of the dobot e6 magician robot.
 It configures the robot state publisher and handles the processing of the URDF/XACRO files.
 """
 
 
 
-# Defining arguments from top level xacro file (mycobot_280.urdf.xacro). These are static.
+# Defining arguments from top level xacro file (dobot_e6.urdf.xacro). 
 
 ARGUMENTS = [
     DeclareLaunchArgument('robot_name',default_value="dobot_e6",
@@ -35,9 +35,13 @@ ARGUMENTS = [
 
 def generate_launch_description():
     """ 
-    Generates the launch description for robot visualization in RViz or simulation.
+    Generates the launch description for robot visualization in RViz.
     This file launches:
-        - The robot_state_publisher node (to publish TF and /robot_description)
+        - robot_state_publisher node (to publish TF and /robot_description)
+        - joint_state_publisher node 
+        - joint_state_publisher_gui node
+        - rviz (for visualization purposes)
+
 
 
     """

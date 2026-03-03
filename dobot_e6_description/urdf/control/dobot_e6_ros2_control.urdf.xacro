@@ -1,0 +1,69 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+    <xacro:macro name="dobot_e6_ros2_control" params="prefix use_mock_hardware">
+
+        <ros2_control name='DobotSystem' type='system'>
+
+            <xacro:unless value='${use_mock_hardware}'>
+                <!-- Add dobot e6 magician hardware plugin when made-->
+            </xacro:unless>
+
+            <xacro:if value="${use_mock_hardware}">
+                <hardware>
+                    <plugin>mock_components/GenericSystem</plugin>
+                    <param name="calculate_dynamics">true</param>
+                </hardware>
+            </xacro:if>
+
+            <joint name="${prefix}base_link_to_${prefix}link1">
+                <command_interface name='position'>
+                    <param name="min">${-2*pi}</param>
+                    <param name="max">${2*pi}</param>
+                </command_interface>
+                <state_interface name='position'/>
+            </joint>
+
+            <joint name="${prefix}link1_to_${prefix}link2">
+                <command_interface name='position'>
+                    <param name="min">${-2*pi}</param>
+                    <param name="max">${2*pi}</param>
+                </command_interface>
+                <state_interface name='position'/>
+            </joint>
+
+            <joint name="${prefix}link2_to_${prefix}link3">
+                <command_interface name='position'>
+                    <param name="min">${-2*pi}</param>
+                    <param name="max">${2*pi}</param>
+                </command_interface>
+                <state_interface name='position'/>
+            </joint>
+
+            <joint name="${prefix}link3_to_${prefix}link4">
+                <command_interface name='position'>
+                    <param name="min">${-2*pi}</param>
+                    <param name="max">${2*pi}</param>
+                </command_interface>
+                <state_interface name='position'/>
+            </joint>
+
+            <joint name="${prefix}link4_to_${prefix}link5">
+                <command_interface name='position'>
+                    <param name="min">${-2*pi}</param>
+                    <param name="max">${2*pi}</param>
+                </command_interface>
+                <state_interface name='position'/>
+            </joint>
+
+            <joint name="${prefix}link5_to_${prefix}flange">
+                <command_interface name='position'>
+                    <param name="min">${-2*pi}</param>
+                    <param name="max">${2*pi}</param>
+                </command_interface>
+                <state_interface name='position'/>
+            </joint>
+
+        </ros2_control>
+        
+    </xacro:macro>
+</robot>
