@@ -27,7 +27,7 @@
         prefix="$(arg prefix)"/>
 
     <xacro:dobot_e6_ros2_control
-        prefix="($arg prefix)"
+        prefix="$(arg prefix)"
         use_mock_hardware="$(arg use_mock_hardware)"/>
 
 </robot>

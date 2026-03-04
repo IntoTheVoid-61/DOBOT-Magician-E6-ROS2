@@ -37,7 +37,7 @@ ARGUMENTS = [
 
 def generate_launch_description():
     """
-    Generates the launch description for ros2_control TODO
+    Generates the launch description for ros2_control 
     """
 
     #--Defining file and package names--#
@@ -53,17 +53,17 @@ def generate_launch_description():
 
     # Build path to top level urdf file
     urdf_path = PathJoinSubstitution(
-        [description_package,'urdf','robots',urdf_filename]
+        [pkg_share_description,'urdf','robots',urdf_filename]
     )
 
     # Build path to rviz config file
     rviz_config_path = PathJoinSubstitution(
-        [description_package,'rviz',rviz_filename]
+        [pkg_share_description,'rviz',rviz_filename]
     )
 
     # Build path to controllers config file
     controllers_path = PathJoinSubstitution(
-        [description_package,'urdf','control',controllers_filename]
+        [pkg_share_description,'config',controllers_filename]
     )
 
     #--Declare launch file arguments--#
@@ -83,7 +83,7 @@ def generate_launch_description():
         'use_gripper:=',LaunchConfiguration('use_gripper'),' ',
         'prefix:=',LaunchConfiguration('prefix'),' ',
         'use_mock_hardware:=',LaunchConfiguration('use_mock_hardware'),' ',
-    ]),value=str)
+    ]),value_type=str)
 
     #--Defining nodes--#
 
