@@ -17,19 +17,13 @@ It configures the robot state publisher and handles the processing of the URDF/X
 # Defining arguments from top level xacro file (dobot_e6.urdf.xacro). 
 
 ARGUMENTS = [
-    DeclareLaunchArgument('robot_name',default_value="dobot_e6",
-                          description='Name of the robot'),
-
-    DeclareLaunchArgument('add_world',default_value="true",
-                          choices=['true','false'],
-                          description='Whether to add the world link'), 
-
-    DeclareLaunchArgument('prefix',default_value="",
-                          description='Prefix for robot, joints and links'),  
 
     DeclareLaunchArgument('use_gripper',default_value="false",
                           choices=['true','false'],
                           description='Whether to use gripper'),     
+
+    DeclareLaunchArgument('robot_name',default_value="dobot_e6",
+                          description='Name of the robot'),
 ]
 
 
@@ -113,7 +107,7 @@ def generate_launch_description():
     robot_description_content = ParameterValue(Command([
         'xacro', ' ', urdf_model, ' ',
         'robot_name:=', LaunchConfiguration('robot_name'), ' ',
-        'prefix:=', LaunchConfiguration('prefix'), ' ',
+        'use_gripper:=',LaunchConfiguration('use_gripper'),' ',
     ]), value_type=str)
 
     #--Defining nodes--#

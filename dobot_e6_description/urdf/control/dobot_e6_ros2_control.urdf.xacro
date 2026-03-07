@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
-    <xacro:macro name="dobot_e6_ros2_control" params="prefix use_mock_hardware">
+    <xacro:macro name="dobot_e6_ros2_control" params="use_mock_hardware">
 
         <ros2_control name='DobotSystem' type='system'>
 
@@ -15,7 +15,7 @@
                 </hardware>
             </xacro:if>
 
-            <joint name="${prefix}base_link_to_${prefix}link1">
+            <joint name="joint1">
                 <command_interface name='position'>
                     <param name="min">${-2*pi}</param>
                     <param name="max">${2*pi}</param>
@@ -23,7 +23,7 @@
                 <state_interface name='position'/>
             </joint>
 
-            <joint name="${prefix}link1_to_${prefix}link2">
+            <joint name="joint2">
                 <command_interface name='position'>
                     <param name="min">${-2*pi}</param>
                     <param name="max">${2*pi}</param>
@@ -31,7 +31,7 @@
                 <state_interface name='position'/>
             </joint>
 
-            <joint name="${prefix}link2_to_${prefix}link3">
+            <joint name="joint3">
                 <command_interface name='position'>
                     <param name="min">${-2*pi}</param>
                     <param name="max">${2*pi}</param>
@@ -39,7 +39,7 @@
                 <state_interface name='position'/>
             </joint>
 
-            <joint name="${prefix}link3_to_${prefix}link4">
+            <joint name="joint4">
                 <command_interface name='position'>
                     <param name="min">${-2*pi}</param>
                     <param name="max">${2*pi}</param>
@@ -47,7 +47,7 @@
                 <state_interface name='position'/>
             </joint>
 
-            <joint name="${prefix}link4_to_${prefix}link5">
+            <joint name="joint5">
                 <command_interface name='position'>
                     <param name="min">${-2*pi}</param>
                     <param name="max">${2*pi}</param>
@@ -55,7 +55,7 @@
                 <state_interface name='position'/>
             </joint>
 
-            <joint name="${prefix}link5_to_${prefix}flange">
+            <joint name="joint6">
                 <command_interface name='position'>
                     <param name="min">${-2*pi}</param>
                     <param name="max">${2*pi}</param>

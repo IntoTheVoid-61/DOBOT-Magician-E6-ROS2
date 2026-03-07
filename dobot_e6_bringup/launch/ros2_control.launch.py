@@ -18,17 +18,10 @@ ARGUMENTS = [
     DeclareLaunchArgument('robot_name',default_value="dobot_e6",
                           description='Name of the robot'),
 
-    DeclareLaunchArgument('add_world',default_value="true",
-                          choices=['true','false'],
-                          description='Whether to add the world link'), 
-
     DeclareLaunchArgument('use_gripper',default_value="false",
                           choices=['true','false'],
                           description='Whether to use gripper'), 
 
-    DeclareLaunchArgument('prefix',default_value="",
-                          description='Prefix for robot, joints and links'),  
-    
     DeclareLaunchArgument('use_mock_hardware',default_value='true',
                           choices=['true','false'],
                           description='Whether to use mock hardware plugin')
@@ -79,9 +72,7 @@ def generate_launch_description():
     robot_description_content = ParameterValue(Command([
         'xacro',' ',urdf_path,' ',
         'robot_name:=',LaunchConfiguration('robot_name'),' ',
-        'add_world:=',LaunchConfiguration('add_world'),' ',
         'use_gripper:=',LaunchConfiguration('use_gripper'),' ',
-        'prefix:=',LaunchConfiguration('prefix'),' ',
         'use_mock_hardware:=',LaunchConfiguration('use_mock_hardware'),' ',
     ]),value_type=str)
 

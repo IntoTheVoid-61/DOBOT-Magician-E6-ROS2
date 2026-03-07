@@ -13,12 +13,12 @@ arm_controller:
   ros__parameters:
 
     joints:
-      - base_link_to_link1
-      - link1_to_link2
-      - link2_to_link3
-      - link3_to_link4
-      - link4_to_link5
-      - link5_to_flange
+      - joint1
+      - joint2
+      - joint3
+      - joint4
+      - joint5
+      - joint6
 
     command_interfaces:
       - position

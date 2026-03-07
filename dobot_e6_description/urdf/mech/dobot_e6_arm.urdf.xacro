@@ -1,196 +1,262 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
 
-    <!-- TODO: Update properties with actual values for Dobot-->
+    <xacro:macro name="dobot_e6_arm">
+        <!-- Links-->
 
-    <xacro:property name="joint_effort" value="56.0"/>
-    <xacro:property name="joint_velocity" value="2.792527"/>
-    <xacro:property name="joint_damping" value="0.0"/>
-    <xacro:property name="joint_friction" value="0.0"/>
+        <link name="world"/>
+        <link name="dummy_link"/>
+        
+        <link name="base_link">
 
-    <xacro:property name="link1_mass" value="0.12"/>
-    <xacro:property name="link2_mass" value="0.19"/>
-    <xacro:property name="link3_mass" value="0.16"/>
-    <xacro:property name="link4_mass" value="0.124"/>
-    <xacro:property name="link5_mass" value="0.11"/>
-    <xacro:property name="flange_mass" value="0.0739"/>
+            <inertial>
+                <origin xyz="-0.0240568795993814 0.00375533156407527 0.0319345452713943" rpy="0 0 0" />
+                <mass value="0.285212529609956" />
+                <inertia ixx="0.000396422919712692" ixy="-2.45771742761344E-06" ixz="-4.3086536609151E-05" iyy="0.000694067773935387" iyz="-1.70368663919635E-06" izz="0.000881589559792122" />
+            </inertial>
 
-    <xacro:macro name="link_inertial" params="mass ixx iyy izz">
-        <inertial>
-            <origin xyz="0 0 0.0" rpy="0 0 0"/>
-            <mass value="${mass}"/>
-            <inertia
-                ixx="${ixx}" ixy="0.0" ixz="0.0"
-                iyy="${iyy}" iyz="0.0"
-                izz="${izz}"/>
-        </inertial>
+            <visual>
+                <origin xyz="0 0 0" rpy="0 0 0" />
+                <geometry>
+                    <mesh filename="file://$(find dobot_e6_description)/meshes/dobot_e6_arm/visual/base_link.STL" />
+                </geometry>
+                <material name="">
+                    <color rgba="0.752941176470588 0.752941176470588 0.752941176470588 1" />
+                </material>
+            </visual>
+
+            <collision>
+                <origin xyz="0 0 0" rpy="0 0 0" />
+                <geometry>
+                    <mesh filename="file://$(find dobot_e6_description)/meshes/dobot_e6_arm/visual/base_link.STL" />
+                </geometry>
+            </collision>
+            
+        </link>
+
+        <link name="Link1">
+
+            <inertial>
+                <origin xyz="-0.0083034891135278 0.000169963422442479 0.0273090165667047" rpy="0 0 0" />
+                <mass value="0.0905534651015844" />
+                <inertia ixx="0.000126000179432565" ixy="3.82915686953423E-07" ixz="2.6110576023655E-05" iyy="0.000106769415321957" iyz="-2.94192272889944E-07" izz="0.000110954758888466" />
+            </inertial>
+
+            <visual>
+                <origin xyz="0 0 0" rpy="0 0 0" />
+                <geometry>
+                    <mesh filename="file://$(find dobot_e6_description)/meshes/dobot_e6_arm/visual/Link1.STL" />
+                </geometry>
+                <material name="">
+                    <color rgba="0.752941176470588 0.752941176470588 0.752941176470588 1" />
+                </material>
+            </visual>
+
+            <collision>
+                <origin xyz="0 0 0" rpy="0 0 0" />
+                <geometry>
+                    <mesh filename="file://$(find dobot_e6_description)/meshes/dobot_e6_arm/visual/Link1.STL" />
+                </geometry>
+            </collision>
+
+        </link>
+
+        <link name="Link2">
+
+            <inertial>
+                <origin xyz="-3.08219150776858E-06 0.0879305908719406 0.0388340121175632" rpy="0 0 0" />
+                <mass value="0.262143169591665" />
+                <inertia ixx="0.00151705147157064" ixy="-9.05783800425971E-08" ixz="-2.30358806459891E-08" iyy="0.000184651484640178" iyz="5.92489195475674E-06" izz="0.00160256161333827" />
+            </inertial>
+
+            <visual>
+                <origin xyz="0 0 0" rpy="0 0 0" />
+                <geometry>
+                    <mesh filename="file://$(find dobot_e6_description)/meshes/dobot_e6_arm/visual/Link2.STL" />
+                </geometry>
+                <material name="">
+                    <color rgba="0.752941176470588 0.752941176470588 0.752941176470588 1" />
+                </material>
+            </visual>
+
+            <collision>
+                <origin xyz="0 0 0" rpy="0 0 0" />
+                <geometry>
+                    <mesh filename="file://$(find dobot_e6_description)/meshes/dobot_e6_arm/visual/Link2.STL" />
+                </geometry>
+            </collision>
+
+        </link>
+
+        <link name="Link3">
+            
+            <inertial>
+                <origin xyz="0.000287552185448503 0.071655088852445 -0.0471165778156417" rpy="0 0 0" />
+                <mass value="0.165777554463868" />
+                <inertia ixx="0.000830428352662996" ixy="2.8181042521152E-06" ixz="-9.46588589577167E-07" iyy="0.000136357822793152" iyz="3.34896030109504E-05" izz="0.000875008990596281" />
+            </inertial>
+
+            <visual>
+                <origin xyz="0 0 0" rpy="0 0 0" />
+                <geometry>
+                    <mesh filename="file://$(find dobot_e6_description)/meshes/dobot_e6_arm/visual/Link3.STL" />
+                </geometry>
+                <material name="">
+                    <color rgba="0.752941176470588 0.752941176470588 0.752941176470588 1" />
+                </material>
+            </visual>
+
+            <collision>
+                <origin xyz="0 0 0" rpy="0 0 0" />
+                <geometry>
+                    <mesh filename="file://$(find dobot_e6_description)/meshes/dobot_e6_arm/visual/Link3.STL" />
+                </geometry>
+            </collision>
+
+        </link>
+
+        <link name="Link4">
+            
+            <inertial>
+                <origin xyz="4.09285774923343E-06 0.00868445353374203 0.0236778972827499" rpy="0 0 0" />
+                <mass value="0.0513325001478492" />
+                <inertia ixx="4.01013411471145E-05" ixy="-1.20578032972286E-09" ixz="-4.45580261969494E-09" iyy="4.5290271173066E-05" iyz="-1.00105786014305E-05" izz="4.79740476320818E-05" />
+            </inertial>
+
+            <visual>
+                <origin xyz="0 0 0" rpy="0 0 0" />
+                <geometry>
+                    <mesh filename="file://$(find dobot_e6_description)/meshes/dobot_e6_arm/visual/Link4.STL" />
+                </geometry>
+                <material name="">
+                    <color rgba="0.752941176470588 0.752941176470588 0.752941176470588 1" />
+                </material>
+            </visual>
+
+            <collision>
+                <origin xyz="0 0 0" rpy="0 0 0" />
+                <geometry>
+                    <mesh filename="file://$(find dobot_e6_description)/meshes/dobot_e6_arm/visual/Link4.STL" />
+                </geometry>
+            </collision>
+        </link>
+
+        <link name="Link5">
+            
+            <inertial>
+                <origin xyz="0.0105483555263245 3.64597044475367E-06 0.0262055886148362" rpy="0 0 0" />
+                <mass value="0.0698692996111581" />
+                <inertia ixx="5.60115215664426E-05" ixy="-7.74590413803E-09" ixz="8.25739718196742E-06" iyy="5.44754597177232E-05" iyz="2.95354323871408E-09" izz="6.26975970041226E-05" />
+            </inertial>
+
+            <visual>
+                <origin xyz="0 0 0" rpy="0 0 0" />
+                <geometry>
+                    <mesh filename="file://$(find dobot_e6_description)/meshes/dobot_e6_arm/visual/Link5.STL" />
+                </geometry>
+                <material name="">
+                    <color rgba="0.752941176470588 0.752941176470588 0.752941176470588 1" />
+                </material>
+            </visual>
+
+            <collision>
+                <origin xyz="0 0 0" rpy="0 0 0" />
+                <geometry>
+                    <mesh filename="file://$(find dobot_e6_description)/meshes/dobot_e6_arm/visual/Link5.STL" />
+                </geometry>
+            </collision>
+
+        </link>
+
+        <link name="Link6">
+            
+            <inertial>
+                <origin xyz="-9.26807198336826E-06 0.00202791129000202 0.0111078385958137" rpy="0 0 0" />
+                <mass value="0.0200378152167263" />
+                <inertia ixx="7.30357563767904E-06" ixy="2.93853237811271E-09" ixz="2.10157561923958E-10" iyy="6.84457889267137E-06" iyz="-3.06988248779752E-08" izz="1.29091396053918E-05" />
+            </inertial>
+
+            <visual>
+                <origin xyz="0 0 0" rpy="0 0 0" />
+                <geometry>
+                    <mesh filename="file://$(find dobot_e6_description)/meshes/dobot_e6_arm/visual/Link6.STL" />
+                </geometry>
+                <material name="">
+                    <color rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+                </material>
+            </visual>
+
+            <collision>
+                <origin xyz="0 0 0" rpy="0 0 0" />
+                <geometry>
+                    <mesh filename="file://$(find dobot_e6_description)/meshes/dobot_e6_arm/visual/Link6.STL" />
+                </geometry>
+            </collision>
+
+        </link>
+
+        <!-- Joints-->
+
+        <joint name="world_joint" type="fixed">
+            <origin xyz="0 0 0.03" rpy="0 0 0" />
+            <parent link="world" />
+            <child  link="dummy_link" />
+        </joint>
+
+        <joint name="dummy_joint" type="fixed">
+            <parent link="dummy_link" />
+            <child link="base_link" />
+        </joint>
+
+        <joint name="joint1" type="revolute">
+            <origin xyz="0 0 0.1268" rpy="0 0 0" />
+            <parent link="base_link" />
+            <child link="Link1" />
+            <axis xyz="0 0 1" />
+            <limit lower="-6.27" upper="6.27" effort="300" velocity="300" />
+        </joint>
+
+        <joint name="joint2" type="revolute">
+            <origin xyz="-0.046 0 0.04" rpy="1.5708 0 -1.5708" />
+            <parent link="Link1" />
+            <child link="Link2" />
+            <axis xyz="0 0 1" />
+            <limit lower="-2.356" upper="2.356" effort="300" velocity="300" />
+        </joint>
+
+        <joint name="joint3" type="revolute">
+            <origin xyz="0 0.18906 0.003" rpy="0 0 0" />
+            <parent link="Link2" />
+            <child link="Link3" />
+            <axis xyz="0 0 1" />
+            <limit lower="-2.6878" upper="2.6878" effort="300" velocity="300" />
+        </joint>
+
+        <joint name="joint4" type="revolute">
+            <origin xyz="0 0.16 0.005" rpy="0 0 0" />
+            <parent link="Link3" />
+            <child link="Link4" />
+            <axis xyz="0 0 1" />
+            <limit lower="-2.7925" upper="2.7925" effort="300" velocity="300" />
+        </joint>
+
+        <joint name="joint5" type="revolute">
+            <origin xyz="0 0.067 0.032" rpy="-1.5708 1.5708 0" />
+            <parent link="Link4" />
+            <child link="Link5" />
+            <axis xyz="0 0 1" />
+            <limit lower="-3.0194" upper="3.0194" effort="300" velocity="300" />
+        </joint>
+
+        <joint name="joint6" type="revolute">
+            <origin xyz="-0.047 0 0.034" rpy="1.5708 0 -1.5708" />
+            <parent link="Link5" />
+            <child link="Link6" />
+            <axis xyz="0 0 1" />
+            <limit lower="-6.27" upper="6.27" effort="300" velocity="300" />
+        </joint>
+
     </xacro:macro>
 
-    <xacro:macro name="dobot_e6_arm" params="prefix">
-
-        <link name="${prefix}link1">
-            <!-- TODO: Fix inertial-->
-             <!-- TODO: Fix inertial origin-->
-            <xacro:link_inertial mass="${link1_mass}" ixx="0.000148" iyy="0.000148" izz="0.000096"/>
-            <visual>
-                <origin xyz="0 0 0" rpy="0 0 0" />
-                <geometry>
-                    <mesh filename="file://$(find dobot_e6_description)/meshes/dobot_e6_arm/visual/link1_t.STL" />
-                </geometry>
-            </visual>
-            <collision>
-                <origin xyz="0 0.01025 -0.00145" rpy="0 0 0" />
-                <geometry>
-                    <box size="0.100 0.090 0.085"/>
-                </geometry>
-            </collision>
-        </link>
-
-
-        <link name="${prefix}link2">
-            <!-- TODO: Fix inertial-->
-             <!-- TODO: Fix inertial origin-->
-            <xacro:link_inertial mass="${link2_mass}" ixx="0.000148" iyy="0.000148" izz="0.000096"/>
-            <visual>
-                <origin xyz="0 0 0" rpy="0 0 0" />
-                <geometry>
-                    <mesh filename="file://$(find dobot_e6_description)/meshes/dobot_e6_arm/visual/link2.STL" />
-                </geometry>
-            </visual>
-            <collision>
-                <origin xyz="0 -0.09375 0.00283" rpy="0 0 0" />
-                <geometry>
-                    <box size="0.080 0.267 0.080"/>
-                </geometry>
-            </collision>
-        </link>
-
-        <link name="${prefix}link3">
-            <!-- TODO: Fix inertial-->
-             <!-- TODO: Fix inertial origin-->
-            <xacro:link_inertial mass="${link3_mass}" ixx="0.000148" iyy="0.000148" izz="0.000096"/>
-            <visual>
-                <origin xyz="0 0 0" rpy="0 0 0" />
-                <geometry>
-                    <mesh filename="file://$(find dobot_e6_description)/meshes/dobot_e6_arm/visual/link3.STL" />
-                </geometry>
-            </visual>
-            <collision>
-                <origin xyz="0 -0.080 0.00283" rpy="0 0 0" />
-                <geometry>
-                    <box size="0.080 0.230 0.080"/>
-                </geometry>
-            </collision>
-        </link>
-
-        <link name="${prefix}link4">
-            <!-- TODO: Fix inertial-->
-             <!-- TODO: Fix inertial origin-->
-            <xacro:link_inertial mass="${link4_mass}" ixx="0.000148" iyy="0.000148" izz="0.000096"/>
-            <visual>
-                <origin xyz="0 0 0" rpy="0 0 0" />
-                <geometry>
-                    <mesh filename="file://$(find dobot_e6_description)/meshes/dobot_e6_arm/visual/link4.STL" />
-                </geometry>
-            </visual>
-            <collision>
-                <origin xyz="0 -0.0085 -0.0055" rpy="0 0 0" />
-                <geometry>
-                    <box size="0.065 0.087 0.077"/>
-                </geometry>
-            </collision>
-        </link>
-
-        <link name="${prefix}link5">
-            <!-- TODO: Fix inertial-->
-             <!-- TODO: Fix inertial origin-->
-            <xacro:link_inertial mass="${link5_mass}" ixx="0.000148" iyy="0.000148" izz="0.000096"/>
-            <visual>
-                <origin xyz="0 0 0" rpy="0 0 0" />
-                <geometry>
-                    <mesh filename="file://$(find dobot_e6_description)/meshes/dobot_e6_arm/visual/link5.STL" />
-                </geometry>
-            </visual>
-            <collision>
-                <origin xyz="0 0.00965 -0.00825" rpy="0 0 0" />
-                <geometry>
-                    <box size="0.065 0.109 0.0815"/>
-                </geometry>
-            </collision>
-        </link>
-
-
-        <link name="${prefix}flange">
-            <!-- TODO: Fix inertial-->
-             <!-- TODO: Fix inertial origin-->
-            <xacro:link_inertial mass="${flange_mass}" ixx="0.000148" iyy="0.000148" izz="0.000096"/>
-            <visual>
-                <origin xyz="0 0 0" rpy="0 0 0" />
-                <geometry>
-                    <mesh filename="file://$(find dobot_e6_description)/meshes/dobot_e6_arm/visual/flange.STL" />
-                </geometry>
-            </visual>
-            <collision>
-                <origin xyz="0 0 0" rpy="0 0 0" />
-                <geometry>
-                    <cylinder radius="0.0400" length="0.021"/>
-                </geometry>
-            </collision>
-        </link>
-
-
-
-        <joint name="${prefix}base_link_to_${prefix}link1" type="revolute">
-            <parent link="${prefix}base_link" />
-            <child link="${prefix}link1" />
-            <origin xyz="0 0 0.0967" rpy="0 0 ${pi}" />
-            <axis xyz="0 0 1" />
-            <limit effort="${joint_effort}" lower="-2.879793" upper="2.879793" velocity="${joint_velocity}"/>
-        </joint>
-
-        <joint name="${prefix}link1_to_${prefix}link2" type="revolute">
-            <parent link="${prefix}link1" />
-            <child link="${prefix}link2" />
-            <origin xyz="0 0.09717 0" rpy="${-pi/2} 0 0" />
-            <axis xyz="0 0 1" />
-            <limit effort="${joint_effort}" lower="-2.879793" upper="2.879793" velocity="${joint_velocity}"/>
-        </joint>
-
-        <joint name="${prefix}link2_to_${prefix}link3" type="revolute">
-            <parent link="${prefix}link2" />
-            <child link="${prefix}link3" />
-            <origin xyz="0 -0.189 -0.07888" rpy="0 ${pi} 0" />
-            <axis xyz="0 0 1" />
-            <limit effort="${joint_effort}" lower="-2.879793" upper="2.879793" velocity="${joint_velocity}"/>
-        </joint>
-
-        <joint name="${prefix}link3_to_${prefix}link4" type="revolute">
-            <parent link="${prefix}link3" />
-            <child link="${prefix}link4" />
-            <origin xyz="0 -0.160 -0.08621" rpy="0 ${pi} 0" />
-            <axis xyz="0 0 1" />
-            <limit effort="${joint_effort}" lower="-2.879793" upper="2.879793" velocity="${joint_velocity}"/>
-        </joint>
-
-        <joint name="${prefix}link4_to_${prefix}link5" type="revolute">
-            <parent link="${prefix}link4" />
-            <child link="${prefix}link5" />
-            <origin xyz="0 -0.101 0" rpy="${pi/2} ${pi} 0" />
-            <axis xyz="0 0 1" />
-            <limit effort="${joint_effort}" lower="-2.879793" upper="2.879793" velocity="${joint_velocity}"/>
-        </joint>
-
-        <joint name="${prefix}link5_to_${prefix}flange" type="revolute">
-            <parent link="${prefix}link5" />
-            <child link="${prefix}flange" />
-            <!--origin xyz="-0.00362 -0.05989 0" rpy="${pi/2} 0 0" /-->
-            <origin xyz="0 -0.05989 0" rpy="${pi/2} 0 0" />
-            <axis xyz="0 0 1" />
-            <limit effort="${joint_effort}" lower="-2.879793" upper="2.879793" velocity="${joint_velocity}"/>
-        </joint>
-
-
-    </xacro:macro>
- 
-
+            
 </robot>
