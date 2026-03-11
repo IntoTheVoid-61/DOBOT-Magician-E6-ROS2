@@ -1,7 +1,7 @@
 moveit_setup_assistant_config:
   urdf:
     package: dobot_e6_description
-    relative_path: urdf/mech/dobot_e6_arm.urdf.xacro
+    relative_path: urdf/robots/dobot_e6.urdf.xacro
   srdf:
     relative_path: config/me6_robot.srdf
   package_settings:

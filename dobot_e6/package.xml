@@ -13,10 +13,11 @@
   <test_depend>ament_lint_common</test_depend>
 
   <exec_depend>dobot_e6_bringup</exec_depend>
-  <exec_depend>dobot_e6_bringup_v4</exec_depend>
+  <exec_depend>cr_robot_ros2</exec_depend>
   <exec_depend>dobot_e6_description</exec_depend>
-  <exec_depend>dobot_e6_moveit</exec_depend>
+  <exec_depend>me6_moveit</exec_depend>
   <exec_depend>dobot_msgs_v4</exec_depend>
+  <exec_depend>dobot_moveit</exec_depend>
 
   <export>
     <build_type>ament_cmake</build_type>

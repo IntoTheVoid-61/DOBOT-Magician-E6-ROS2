@@ -3,6 +3,7 @@
     <xacro:arg name="initial_positions_file" default="initial_positions.yaml" />
 
     <!-- Import me6_robot urdf file -->
+    <!--xacro:include filename="$(find dobot_rviz)/urdf/me6_robot.urdf" /-->
     <xacro:include filename="$(find dobot_e6_description)/urdf/robots/dobot_e6.urdf.xacro" />
 
     <!-- Import control_xacro -->

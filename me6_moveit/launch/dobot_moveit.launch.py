@@ -16,7 +16,7 @@ import time
 import os
 from launch_ros.actions import Node
 def generate_launch_description():
-    moveit_config = MoveItConfigsBuilder("me6_robot", package_name="dobot_e6_moveit").to_moveit_configs()
+    moveit_config = MoveItConfigsBuilder("me6_robot", package_name="me6_moveit").to_moveit_configs()
 
     ld = LaunchDescription()
     my_generate_rsp_launch(ld, moveit_config)
