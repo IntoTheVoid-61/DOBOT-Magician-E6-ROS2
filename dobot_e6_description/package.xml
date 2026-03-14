@@ -11,7 +11,12 @@
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 
+  <!--urdf based-->
   <depend>urdf_tutorial</depend>
+  
+  <!--ros2_control based-->
+  <exec_depend>ros2_controllers</exec_depend>
+  <exec_depend>controller_manager</exec_depend>
 
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>
