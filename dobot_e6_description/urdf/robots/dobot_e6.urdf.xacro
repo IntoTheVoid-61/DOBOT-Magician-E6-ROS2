@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
-<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="dobot_e6">
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="me6_robot">
 
     <xacro:arg name="use_gripper" default="false"/>
-    <xacro:arg name="robot_name" default="dobot_e6"/>
+    <xacro:arg name="robot_name" default="me6_robot"/>
     <xacro:arg name='use_mock_hardware' default='true'/>
 
     <xacro:include filename="$(find dobot_e6_description)/urdf/mech/dobot_e6_arm.urdf.xacro"/>

@@ -6,8 +6,11 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 endif()
 
 # find dependencies
+# If dependencies are of <depend> type, meaning they are needed both to build and run the package,
+# we need to find them during compilation and link them.
+
 find_package(ament_cmake REQUIRED)
-find_package(urdf_tutorial REQUIRED)
+#find_package(urdf_tutorial REQUIRED)
 # uncomment the following section in order to fill in
 # further dependencies manually.
 # find_package(<dependency> REQUIRED)

@@ -15,7 +15,7 @@ controller manager with joint_state_broadcaster and joint_trajectory_controller,
 # Defining arguments from top level xacro file (dobot_e6.urdf.xacro).
 
 ARGUMENTS = [
-    DeclareLaunchArgument('robot_name',default_value="dobot_e6",
+    DeclareLaunchArgument('robot_name',default_value="me6_robot",
                           description='Name of the robot'),
 
     DeclareLaunchArgument('use_gripper',default_value="false",

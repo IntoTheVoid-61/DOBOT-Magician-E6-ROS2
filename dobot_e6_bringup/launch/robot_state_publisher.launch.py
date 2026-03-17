@@ -22,7 +22,7 @@ ARGUMENTS = [
                           choices=['true','false'],
                           description='Whether to use gripper'),     
 
-    DeclareLaunchArgument('robot_name',default_value="dobot_e6",
+    DeclareLaunchArgument('robot_name',default_value="me6_robot",
                           description='Name of the robot'),
 ]
 
