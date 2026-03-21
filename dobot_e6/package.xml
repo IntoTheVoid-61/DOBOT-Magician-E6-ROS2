@@ -18,6 +18,8 @@
   <exec_depend>me6_moveit</exec_depend>
   <exec_depend>dobot_msgs_v4</exec_depend>
   <exec_depend>dobot_moveit</exec_depend>
+  <exec_depend>dobot_msgs_fb</exec_depend>
+  <exec_depend>dobot_system_tests</exec_depend>
 
   <export>
     <build_type>ament_cmake</build_type>
