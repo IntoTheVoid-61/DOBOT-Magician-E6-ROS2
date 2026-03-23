@@ -1,0 +1,12 @@
+# Request
+float64 velocity_scaling
+float64 acceleration_scaling
+geometry_msgs/Pose home_pose
+string end_effector_link
+---
+# Result
+bool success
+---
+# Feedback
+string status
+float64 elapsed_time

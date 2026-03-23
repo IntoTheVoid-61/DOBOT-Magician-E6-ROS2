@@ -12,6 +12,12 @@ find_package(rclcpp REQUIRED)
 find_package(rclcpp_action REQUIRED)
 find_package(moveit_ros_planning_interface REQUIRED)
 
+# install directories
+install (
+  DIRECTORY config
+  DESTINATION share/${PROJECT_NAME}
+)
+
 # add move_to_pose_action_server executable
 add_executable(move_to_pose_action_server
   src/move_to_pose_action_server.cpp
@@ -20,6 +26,14 @@ add_executable(move_to_pose_action_server
 # add move_to_pose_action_client executable
 add_executable(move_to_pose_action_client
   src/move_to_pose_action_client.cpp)
+
+# add move_to_home_action_server executable
+add_executable(move_to_home_action_server
+  src/move_to_home_action_server.cpp)  
+
+# add move_to_home_action_client executable
+add_executable(move_to_home_action_client
+  src/move_to_home_action_client.cpp)
 
 # specify dependencies for move_to_pose_action_server
 ament_target_dependencies(move_to_pose_action_server
@@ -34,7 +48,25 @@ ament_target_dependencies(move_to_pose_action_client
   rclcpp
   rclcpp_action
   dobot_msgs_fb
+  geometry_msgs
 )
+
+# specify dependencies for move_to_home_action_server
+ament_target_dependencies(move_to_home_action_server
+  rclcpp
+  rclcpp_action
+  dobot_msgs_fb
+  moveit_ros_planning_interface
+)
+
+# specify dependencies for move_to_home_action_client
+ament_target_dependencies(move_to_home_action_client
+  rclcpp
+  rclcpp_action
+  dobot_msgs_fb
+  geometry_msgs
+)
+
 
 # Install the executables move_to_pose_action_server
 install(TARGETS
@@ -45,6 +77,18 @@ install(TARGETS
 # Install the executables move_to_pose_action_client
 install(TARGETS
   move_to_pose_action_client
+  DESTINATION lib/${PROJECT_NAME}
+)
+
+# Install the executables move_to_pose_action_server
+install(TARGETS
+  move_to_home_action_server
+  DESTINATION lib/${PROJECT_NAME}
+)
+
+# Install the executables move_to_pose_action_client
+install(TARGETS
+  move_to_home_action_client
   DESTINATION lib/${PROJECT_NAME}
 )
 

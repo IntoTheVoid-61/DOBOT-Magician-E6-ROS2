@@ -111,6 +111,7 @@ private:
     void handle_accepted(const std::shared_ptr<GoalHandleMoveToPose> goal_handle)
     {
         // create a new thread with proper bind syntax
+        // This needs to be returned quickly to avoid blocking the executor, spin a new thread
         std::thread{
             [this, goal_handle]() {
                 this->execute(goal_handle);
@@ -125,7 +126,7 @@ private:
     1. Clears potentially cached targets 
     2. Sets max velocity scaling factor
     3. Sets max acceleration scaling factor
-    4. Sets and executes the desired Pose
+    4. Sets and executes the desired pose
 
     */
 
@@ -152,7 +153,7 @@ private:
         move_group_interface_->setMaxAccelerationScalingFactor(goal->acceleration_scaling);
 
         // explicit declaration of end-effector link and setting to specified pose
-        move_group_interface_->setEndEffectorLink("Link6");
+        move_group_interface_->setEndEffectorLink("Link6"); // TODO: This can be parametrized
         move_group_interface_->setPoseTarget(goal->target_pose, "Link6");
 
         // Evaluating 
@@ -165,6 +166,7 @@ private:
         // Execute if evaluation returns true
         if (success){
             // blocks until motion is finished, we need a separate thread!!!!!!
+            // executes motion
             move_group_interface_->asyncExecute(plan);
         }
         else{

@@ -13,10 +13,17 @@ find_package(geometry_msgs)
 # further dependencies manually.
 # find_package(<dependency> REQUIRED)
 
+# MoveToPose, depends on geometry_msgs
 rosidl_generate_interfaces(${PROJECT_NAME}
   "action/MoveToPose.action"
+  "action/MoveToHome.action"
   DEPENDENCIES geometry_msgs
 )
+
+# MoveToHome, no dependencies
+#rosidl_generate_interfaces(${PROJECT_NAME}
+#  "action/MoveToHome.action"
+#)
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)

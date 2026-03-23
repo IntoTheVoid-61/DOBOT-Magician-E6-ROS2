@@ -1,56 +1,44 @@
 /*
-@brief This ROS 2 node implements a move_to_pose action client for sending movement goals.
-
-This action client is responsible for sending the desired pose and velocity-acceleration scaling commands
-to the action server.
-
-Action client:
-    - move_to_pose (dobot_msgs_fb/action/MoveToPose)
-    Sends goals to move_to_pose and receives feedback and results
-        - Goals: velocity_scaling, acceleration_scaling, target_pose
-        - Feedback: status, elapsed_time
-        - Results: success
-
-@ author: Ziga Breznikar
-@ date: 18.03.2026
-
+TODO
 
 */
 
 #include <memory>
 #include <thread>
 
-#include "dobot_msgs_fb/action/move_to_pose.hpp"
+#include "dobot_msgs_fb/action/move_to_home.hpp"
 #include "rclcpp/rclcpp.hpp"
 #include "rclcpp_action/rclcpp_action.hpp"
 #include "geometry_msgs/msg/pose.h"
 
-using MoveToPose = dobot_msgs_fb::action::MoveToPose;
-using GoalHandleMoveToPose = rclcpp_action::ClientGoalHandle<MoveToPose>;
+using MoveToHome = dobot_msgs_fb::action::MoveToHome;
+using GoalHandleMoveToHome = rclcpp_action::ClientGoalHandle<MoveToHome>;
 
 namespace dobot_system_tests
 {
-class MoveToPoseActionClient : public rclcpp::Node
+class MoveToHomeActionClient : public rclcpp::Node
 {
 public:
     /*
     @brief Constructor for MoveToPoseActionClient
     @param options ROS 2 node options
     */
-    explicit MoveToPoseActionClient(const rclcpp::NodeOptions& options)
-    : Node("move_to_pose_action_client_cpp", options)
+
+    explicit MoveToHomeActionClient(const rclcpp::NodeOptions& options)
+    : Node("move_to_home_action_client_cpp", options)
     {
         // create action_client
-        action_client_ = rclcpp_action::create_client<MoveToPose>(
+        action_client_ = rclcpp_action::create_client<MoveToHome>(
             this,
-            "move_to_pose"
+            "move_to_home"
         );
 
-        this->declare_parameter("velocity_scaling", 0.5);
-        this->declare_parameter("acceleration_scaling", 0.5);
-        this->declare_parameter("target_pose", std::vector<double>{0.3,0.0,0.2,0.0,0.0,0.0,1.0});
+        // declare parameters (default values if values are like this yaml file will be read)
+        this->declare_parameter("velocity_scaling", 0.0);
+        this->declare_parameter("acceleration_scaling", 0.0);
+        this->declare_parameter("home_pose", std::vector<double>{0.0,0.0,0.0,0.0,0.0,0.0,0.0});
+        this->declare_parameter("end_effector_link", "");
 
-        // add timer for calling send_goal
         timer_ = this->create_wall_timer(
             std::chrono::milliseconds(500),
             [this](){
@@ -62,8 +50,8 @@ public:
 
 private:
     // class member variables
-    rclcpp_action::Client<MoveToPose>::SharedPtr action_client_;
-    GoalHandleMoveToPose::SharedPtr goal_handle_;
+    rclcpp_action::Client<MoveToHome>::SharedPtr action_client_;
+    GoalHandleMoveToHome::SharedPtr goal_handle_;
     rclcpp::TimerBase::SharedPtr timer_;
 
     /*
@@ -71,7 +59,7 @@ private:
     @param goal_handle The goal handle returned by the action server.
     */
 
-    void goal_response_callback(const GoalHandleMoveToPose::SharedPtr& goal_handle){
+    void goal_response_callback(const GoalHandleMoveToHome::SharedPtr& goal_handle){
 
         if(!goal_handle){
             RCLCPP_ERROR(get_logger(), "Goal was rejected by the server!");
@@ -91,8 +79,8 @@ private:
     */
 
     void feedback_callback(
-        const GoalHandleMoveToPose::SharedPtr& goal_handle,
-        const std::shared_ptr<const MoveToPose::Feedback>& feedback
+        const GoalHandleMoveToHome::SharedPtr& goal_handle,
+        const std::shared_ptr<const MoveToHome::Feedback>& feedback
     ){
         (void) goal_handle; // unused parameter
         // Log feedback
@@ -103,17 +91,15 @@ private:
                     );
     }
 
-
     /*
     @brief Callback function for getting results
     @param result The result message received from the action server.
     */
 
-    void get_result_callback(const GoalHandleMoveToPose::WrappedResult& result){
+    void get_result_callback(const GoalHandleMoveToHome::WrappedResult& result){
 
         switch (result.code)
         {
-        // Not necessarily currently but we could add the pose error
         // If succeeded
         case rclcpp_action::ResultCode::SUCCEEDED:
             RCLCPP_INFO(get_logger(), "Goal succeeded!");
@@ -133,7 +119,6 @@ private:
         }
 
         return;
-
     }
 
     /*
@@ -172,17 +157,19 @@ private:
     */
 
     void send_goal(){
-
         // wait for action server
         if(!action_client_->wait_for_action_server(std::chrono::seconds(5))){
             RCLCPP_ERROR(get_logger(), "Action server not available!");
             return;
         }
 
-        // Get parameters for the goal
+
+        // get parameters for the goal
         auto velocity_scaling = this->get_parameter("velocity_scaling").as_double();
         auto acceleration_scaling = this->get_parameter("acceleration_scaling").as_double();
-        auto pose_array = this->get_parameter("target_pose").as_double_array();
+        auto pose_array = this->get_parameter("home_pose").as_double_array();
+        auto end_effector_link = this->get_parameter("end_effector_link").as_string();
+
 
         // create Pose object and assign values from pose vector
         geometry_msgs::msg::Pose pose;
@@ -195,35 +182,32 @@ private:
         pose.orientation.z = pose_array[5];
         pose.orientation.w = pose_array[6];
 
-        auto goal_msg = MoveToPose::Goal();
+        auto goal_msg = MoveToHome::Goal();
         goal_msg.velocity_scaling = velocity_scaling;
         goal_msg.acceleration_scaling = acceleration_scaling;
-        goal_msg.target_pose = pose;
+        goal_msg.home_pose = pose;
+        goal_msg.end_effector_link = end_effector_link;
 
-        RCLCPP_INFO(get_logger(), 
-                    "Sending goal: v=%.2f, a=%.2f, pos=(%.2f, %.2f, %.2f)",
-                    velocity_scaling, 
-                    acceleration_scaling, 
-                    pose.position.x,
-                    pose.position.y,
-                    pose.position.z);
+        RCLCPP_INFO(get_logger(),
+                    "Sending to home!");
 
-        auto send_goal_options = rclcpp_action::Client<MoveToPose>::SendGoalOptions();
-        send_goal_options.goal_response_callback = std::bind(&MoveToPoseActionClient::goal_response_callback, this, std::placeholders::_1);
-        send_goal_options.feedback_callback = std::bind(&MoveToPoseActionClient::feedback_callback, this, std::placeholders::_1, std::placeholders::_2);
-        send_goal_options.result_callback = std::bind(&MoveToPoseActionClient::get_result_callback, this, std::placeholders::_1);
+        auto send_goal_options = rclcpp_action::Client<MoveToHome>::SendGoalOptions();
+        send_goal_options.goal_response_callback = std::bind(&MoveToHomeActionClient::goal_response_callback, this, std::placeholders::_1);
+        send_goal_options.feedback_callback = std::bind(&MoveToHomeActionClient::feedback_callback, this, std::placeholders::_1, std::placeholders::_2);
+        send_goal_options.result_callback = std::bind(&MoveToHomeActionClient::get_result_callback, this, std::placeholders::_1);
 
         action_client_->async_send_goal(goal_msg, send_goal_options);
+
     }
 
-}; // MoveToPoseActionClient
+}; // MoveToHomeActionClient
 
 } // namespace dobot_system_tests
 
 int main(int argc, char** argv)
 {
   rclcpp::init(argc, argv);
-  auto action_client = std::make_shared<dobot_system_tests::MoveToPoseActionClient>(rclcpp::NodeOptions());
+  auto action_client = std::make_shared<dobot_system_tests::MoveToHomeActionClient>(rclcpp::NodeOptions());
   rclcpp::spin(action_client);
   rclcpp::shutdown();
   return 0;

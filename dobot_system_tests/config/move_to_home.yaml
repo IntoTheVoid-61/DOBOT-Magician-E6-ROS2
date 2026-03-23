@@ -1,0 +1,6 @@
+move_to_home_action_server_cpp:
+  ros__parameters:
+    velocity_scaling: 0.5
+    acceleration_scaling: 0.5
+    home_pose: [-0.133,0.0,0.64,-0.5,0.5,0.5,-0.5] # specify desired home pose
+    end_effector_link: "Link6"

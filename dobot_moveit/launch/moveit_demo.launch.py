@@ -14,6 +14,11 @@ def generate_launch_description():
     package_name = f'{name}_moveit'
     urdf_name = "demo.launch.py"
 
+    # config files path
+    actions_pkg_name = "dobot_system_tests"
+    actions_pkg_share = os.path.join(get_package_share_directory(actions_pkg_name))
+    move_to_home_config_file = os.path.join(actions_pkg_share,'config','move_to_home.yaml')
+
     pkg_share = os.path.join(get_package_share_directory(package_name))
 
     moveit_model_path = os.path.join(pkg_share,'launch',urdf_name)
@@ -28,9 +33,17 @@ def generate_launch_description():
         output='screen'
     )
 
+    move_to_home_action_server_node = Node(
+        package='dobot_system_tests',
+        executable='move_to_home_action_server',
+        parameters=[move_to_home_config_file],
+        output='screen'
+    )
+
 
     ld.add_action(included_launch)
     ld.add_action(move_to_pose_action_server_node)
+    ld.add_action(move_to_home_action_server_node)
 
     # 添加其他操作...
     return ld
