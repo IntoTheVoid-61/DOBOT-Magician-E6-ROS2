@@ -1,0 +1,5 @@
+move_to_home_action_server_cpp:
+  ros__parameters:
+    velocity_scaling: 0.5
+    acceleration_scaling: 0.5
+    joint_vector: [0.0,0.0,0.0,0.0,0.0,0.0] # specify desired joint vector, corresponding to home pose

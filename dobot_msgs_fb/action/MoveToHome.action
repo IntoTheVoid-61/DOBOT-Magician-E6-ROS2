@@ -1,0 +1,11 @@
+# Request
+float64 velocity_scaling
+float64 acceleration_scaling
+float64[] joint_vector
+---
+# Result
+bool success
+---
+# Feedback
+string status
+float64 elapsed_time

@@ -1,0 +1,14 @@
+# Request
+float64 velocity_scaling
+float64 acceleration_scaling
+geometry_msgs/Pose target_pose
+---
+# Result
+bool success
+---
+# Feedback
+string status
+float64 elapsed_time
+
+
+
