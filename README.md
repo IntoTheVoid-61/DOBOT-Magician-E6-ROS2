@@ -67,11 +67,19 @@ This repository contains all the necessary files used to integrate the Dobot-E6-
     ```
 
 ---
+## **FarmBeast specific**
+**Packages containing FarmBeast specific implementation**
+ - dobot_msgs_fb
+ - dobot_system_tests
+
+---
 
 ## Notes
 1. Ensure connection is established via ping.
 2. Ensure the robotic arm is in remote TCP mode and enabled. This can be configured via DobotStudio: https://www.scribd.com/document/723793818/DobotStudio-Pro-User-Guide-MG400-M1-Pro-V2-7
 3. This are the recovered files.
 
+---
+## Other
 - **Last Updated**: March 25, 2026
 - **More Information**: https://github.com/Dobot-Arm/DOBOT_6Axis_ROS2_V4/tree/main
