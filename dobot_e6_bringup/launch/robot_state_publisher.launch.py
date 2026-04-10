@@ -18,9 +18,9 @@ It configures the robot state publisher and handles the processing of the URDF/X
 
 ARGUMENTS = [
 
-    DeclareLaunchArgument('use_gripper',default_value="false",
+    DeclareLaunchArgument('use_tester_end_effector',default_value="false",
                           choices=['true','false'],
-                          description='Whether to use gripper'),     
+                          description='Whether to test end effector'),     
 
     DeclareLaunchArgument('robot_name',default_value="me6_robot",
                           description='Name of the robot'),
@@ -107,7 +107,7 @@ def generate_launch_description():
     robot_description_content = ParameterValue(Command([
         'xacro', ' ', urdf_model, ' ',
         'robot_name:=', LaunchConfiguration('robot_name'), ' ',
-        'use_gripper:=',LaunchConfiguration('use_gripper'),' ',
+        'use_tester_end_effector:=',LaunchConfiguration('use_tester_end_effector'),' ',
     ]), value_type=str)
 
     #--Defining nodes--#

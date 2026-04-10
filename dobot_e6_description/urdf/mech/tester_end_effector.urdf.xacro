@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+    <xacro:macro name="tester_end_effector">
+        <link name="tester_link">
+            <inertial>
+                <origin xyz="0.0 0.0 0.04"/>
+                <mass value="0.15"/>
+                <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0"/>
+            </inertial>
+            <visual>
+                <origin xyz="0 0 0" rpy="0 0 0" />
+                <geometry>
+                    <mesh filename="file://$(find dobot_e6_description)/meshes/end_effectors/visual/Tester.STL" />
+                </geometry>
+            </visual>
+            <collision>
+                <origin xyz="0 0 0" rpy="0 0 0" />
+                <geometry>
+                    <mesh filename="file://$(find dobot_e6_description)/meshes/end_effectors/visual/Tester.STL" />
+                </geometry>
+            </collision>
+        </link>
+
+        
+        <joint name="joint_end_effector" type="fixed">
+            <origin xyz="0.0 0.0 0.021"/>
+            <parent link="Link6"/>
+            <child link="tester_link"/>
+        </joint>
+    </xacro:macro>
+</robot>
