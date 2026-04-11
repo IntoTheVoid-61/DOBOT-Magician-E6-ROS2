@@ -21,11 +21,18 @@
             </collision>
         </link>
 
-        
+        <link name="dummy_end_effector"/>
+            
         <joint name="joint_end_effector" type="fixed">
             <origin xyz="0.0 0.0 0.021"/>
             <parent link="Link6"/>
             <child link="tester_link"/>
+        </joint>
+
+        <joint name="joint_dummy_end_effector" type="fixed">
+            <origin xyz="0.0 0.0 0.160"/>
+            <parent link="tester_link"/>
+            <child link="dummy_end_effector"/>
         </joint>
     </xacro:macro>
 </robot>

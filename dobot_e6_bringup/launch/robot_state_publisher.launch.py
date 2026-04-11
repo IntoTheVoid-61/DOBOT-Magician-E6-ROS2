@@ -18,7 +18,7 @@ It configures the robot state publisher and handles the processing of the URDF/X
 
 ARGUMENTS = [
 
-    DeclareLaunchArgument('use_tester_end_effector',default_value="false",
+    DeclareLaunchArgument('use_tester_end_effector',default_value="true",
                           choices=['true','false'],
                           description='Whether to test end effector'),     
 
