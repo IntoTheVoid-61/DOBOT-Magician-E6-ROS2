@@ -71,6 +71,7 @@ This repository contains all the necessary files used to integrate the Dobot-E6-
 **Packages containing FarmBeast specific implementation**
  - dobot_msgs_fb
  - dobot_system_tests
+ - dobot_mtc_tasks
 
 ---
 
@@ -81,5 +82,5 @@ This repository contains all the necessary files used to integrate the Dobot-E6-
 
 ---
 ## Other
-- **Last Updated**: March 25, 2026
+- **Last Updated**: April 11, 2026
 - **More Information**: https://github.com/Dobot-Arm/DOBOT_6Axis_ROS2_V4/tree/main
