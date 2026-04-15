@@ -24,6 +24,8 @@ def generate_launch_description():
     my_generate_move_group_launch(ld, moveit_config)
     # 启动rviz
     my_generate_moveit_rviz_launch(ld, moveit_config)
+    # execute_task_solution
+    generate_launch_move_group(ld,moveit_config)
 
     return ld
 def my_generate_rsp_launch(ld,moveit_config):
@@ -139,4 +141,26 @@ def my_generate_moveit_rviz_launch(ld, moveit_config):
         parameters=rviz_parameters,
     )
 
+    return ld
+
+def generate_launch_move_group(ld,moveit_config):
+
+    # Load  ExecuteTaskSolutionCapability so we can execute found solutions in simulation
+    move_group_capabilities = {
+        "capabilities": "move_group/ExecuteTaskSolutionCapability"
+    }
+
+    # Start the actual move_group node/action server
+    run_move_group_node = Node(
+        package="moveit_ros_move_group",
+        executable="move_group",
+        output="screen",
+        parameters=[
+            move_group_capabilities,
+            moveit_config.to_dict()
+        ],
+    )
+
+
+    ld.add_action(run_move_group_node)
     return ld
