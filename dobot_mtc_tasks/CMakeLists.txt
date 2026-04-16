@@ -7,9 +7,33 @@ endif()
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
+find_package(moveit_task_constructor_core REQUIRED)
+find_package(rclcpp REQUIRED)
 # uncomment the following section in order to fill in
 # further dependencies manually.
 # find_package(<dependency> REQUIRED)
+
+# install directories
+install (
+  DIRECTORY launch
+  DESTINATION share/${PROJECT_NAME}
+)
+
+# add approach_mtc executable
+add_executable(approach_mtc src/approach_mtc.cpp)
+
+# specify dependencies for approach_mtc
+ament_target_dependencies(
+  approach_mtc
+  moveit_task_constructor_core
+  rclcpp
+)
+
+# Install the executable for approach_mtc
+install(TARGETS
+  approach_mtc
+  DESTINATION lib/${PROJECT_NAME}
+)
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
