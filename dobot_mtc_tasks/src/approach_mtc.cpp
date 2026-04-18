@@ -74,6 +74,7 @@ namespace approach
         pose.position.y = 0.15;
         pose.position.z = 0.4;
         pose.orientation.z = 1.0;
+        pose.orientation.w = 0.0; // Force this to 0
         object.pose = pose;
 
         // setting up object_pose_ 
@@ -203,10 +204,12 @@ namespace approach
             generate_approach->setPose(object_pose_);
             generate_approach->setMonitoredStage(current_state_ptr); 
             generate_approach->setMaxSolutions(50); 
-            // Extrinsic ZYX rotation -> Intrinsic XYZ
-            generate_approach->sampleDimension<std::uniform_real_distribution>(mtc::stages::GenerateRandomPose::ROLL, 1.0);
-            generate_approach->sampleDimension<std::uniform_real_distribution>(mtc::stages::GenerateRandomPose::PITCH, 1.0);
-            generate_approach->sampleDimension<std::uniform_real_distribution>(mtc::stages::GenerateRandomPose::YAW, 45.0);
+            // Extrinsic ZYX rotation <-> Intrinsic XYZ
+            // Extrinsic ZYX: Rotate about fixed axes in order Z->Y->X
+            // Radians
+            generate_approach->sampleDimension<std::uniform_real_distribution>(mtc::stages::GenerateRandomPose::ROLL, 0.17);
+            generate_approach->sampleDimension<std::uniform_real_distribution>(mtc::stages::GenerateRandomPose::PITCH, 0.17);
+            generate_approach->sampleDimension<std::uniform_real_distribution>(mtc::stages::GenerateRandomPose::YAW, M_PI_4);
 
 
             // define EE pose
@@ -217,14 +220,10 @@ namespace approach
             grasp_frame_transform.linear() = q.matrix();
             grasp_frame_transform.translation().z() = 0.05;
 
-            //generate_approach->setGraspPose(pre_approach_pose);
-            //approach_container->insert(std::move(generate_approach));
-
             /****************************************
             * 2. Solve IK for generated poses (wrapper pattern)
             ****************************************/ 
             auto approach_ik = std::make_unique<mtc::stages::ComputeIK>("approach IK", std::move(generate_approach));
-            //approach_ik->properties().configureInitFrom(mtc::Stage::PARENT, {"group", "eef", "ik_frame"});
             approach_ik->setMaxIKSolutions(8);          // try up to 8 solutions 
             approach_ik->setMinSolutionDistance(0.01);
             approach_ik->properties().configureInitFrom(mtc::Stage::PARENT, { "eef", "group" });
