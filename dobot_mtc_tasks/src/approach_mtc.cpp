@@ -47,6 +47,7 @@ namespace approach
         mtc::Task createTask();
         mtc::Task task_;
         rclcpp::Node::SharedPtr node_;
+        geometry_msgs::msg::PoseStamped object_pose_; // object pose
     }; // Approach
 
     MTCTaskNode::MTCTaskNode(const rclcpp::NodeOptions& options)
@@ -71,13 +72,18 @@ namespace approach
         geometry_msgs::msg::Pose pose;
         pose.position.x = -0.4;
         pose.position.y = 0.15;
-        pose.position.z = 0.25;
-        pose.orientation.w = 1.0;
+        pose.position.z = 0.4;
+        pose.orientation.z = 1.0;
         object.pose = pose;
+
+        // setting up object_pose_ 
+        object_pose_.header.frame_id = object.header.frame_id;
+        object_pose_.pose = object.pose;
+
 
         moveit::planning_interface::PlanningSceneInterface psi;
         psi.applyCollisionObject(object);
-
+        
     }
 
     /*
@@ -190,22 +196,26 @@ namespace approach
             approach_container->properties().set("ik_frame", hand_frame);
 
             /****************************************
-            * 1. Generate approach poses from cylinder
+            * 1. Generate approach poses from cylinder => Changed to GenerateRandomPose
             ****************************************/ 
-            auto generate_approach = std::make_unique<mtc::stages::GenerateGraspPose>("generate approach pose");
+            auto generate_approach = std::make_unique<mtc::stages::GenerateRandomPose>("generate approach pose");
             generate_approach->properties().configureInitFrom(mtc::Stage::PARENT);
-            generate_approach->setObject("object"); // reads cylinder from planning scene
-            generate_approach->setPreGraspPose("open");
-            generate_approach->setMonitoredStage(current_state_ptr);  
-            generate_approach->setAngleDelta(M_PI / 6); // generate different angles around cylinder
+            generate_approach->setPose(object_pose_);
+            generate_approach->setMonitoredStage(current_state_ptr); 
+            generate_approach->setMaxSolutions(50); 
+            // Extrinsic ZYX rotation -> Intrinsic XYZ
+            generate_approach->sampleDimension<std::uniform_real_distribution>(mtc::stages::GenerateRandomPose::ROLL, 1.0);
+            generate_approach->sampleDimension<std::uniform_real_distribution>(mtc::stages::GenerateRandomPose::PITCH, 1.0);
+            generate_approach->sampleDimension<std::uniform_real_distribution>(mtc::stages::GenerateRandomPose::YAW, 45.0);
 
-            // define EE pose tukaj je problem najverjetneje
+
+            // define EE pose
             Eigen::Isometry3d grasp_frame_transform;
-            Eigen::Quaterniond q = Eigen::AngleAxisd(M_PI / 2, Eigen::Vector3d::UnitX()) *
+            Eigen::Quaterniond q = Eigen::AngleAxisd(-M_PI / 2, Eigen::Vector3d::UnitX()) *
                                 Eigen::AngleAxisd(0, Eigen::Vector3d::UnitY()) *
-                                Eigen::AngleAxisd(0, Eigen::Vector3d::UnitZ());
+                                Eigen::AngleAxisd(-M_PI / 2, Eigen::Vector3d::UnitZ());
             grasp_frame_transform.linear() = q.matrix();
-            grasp_frame_transform.translation().z() = 0.1;
+            grasp_frame_transform.translation().z() = 0.05;
 
             //generate_approach->setGraspPose(pre_approach_pose);
             //approach_container->insert(std::move(generate_approach));
