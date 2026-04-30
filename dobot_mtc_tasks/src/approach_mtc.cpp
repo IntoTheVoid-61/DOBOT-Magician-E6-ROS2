@@ -53,6 +53,12 @@ namespace approach
     MTCTaskNode::MTCTaskNode(const rclcpp::NodeOptions& options)
     : node_{ std::make_shared<rclcpp::Node>("approach_mtc", options) }
     {
+
+        // declare parameters
+        node_->declare_parameter("arm_group_name","me6_group");
+        node_->declare_parameter("hand_group_name","tester");
+        node_->declare_parameter("hand_frame","dummy_end_effector");
+        node_->declare_parameter("me6_group_home_pose", "home");
     }
 
     rclcpp::node_interfaces::NodeBaseInterface::SharedPtr MTCTaskNode::getNodeBaseInterface()
@@ -136,16 +142,16 @@ namespace approach
         task.stages()->setName("approach task");
         task.loadRobotModel(node_);
 
-        const auto& arm_group_name = "me6_group"; // main planning group
-        const auto& hand_group_name = "tester"; // end effector group
-        const auto& hand_frame = "dummy_end_effector"; // frame for inverse kinematics
+        const auto arm_group_name = node_->get_parameter("arm_group_name").as_string(); // main planning group
+        const auto hand_group_name = node_->get_parameter("hand_group_name").as_string(); // end effector group
+        const auto hand_frame = node_->get_parameter("hand_frame").as_string(); // frame for inverse kinematics
 
         task.setProperty("group", arm_group_name);
         task.setProperty("eef", hand_group_name);
         task.setProperty("ik_frame", hand_frame);
 
         // Here we can add parameters from config file later, for now hardcoded.
-        std::string me6_group_home_pose = "home";
+        std::string me6_group_home_pose = node_->get_parameter("me6_group_home_pose").as_string();
 
         // Initialize planners for different types of motions
         auto sampling_planner = std::make_shared<mtc::solvers::PipelinePlanner>(node_);

@@ -1,0 +1,6 @@
+approach_mtc:
+  ros__parameters:
+    arm_group_name: "me6_group"
+    hand_group_name: "tester"
+    hand_frame: "dummy_end_effector"
+    me6_group_home_pose: "home"
