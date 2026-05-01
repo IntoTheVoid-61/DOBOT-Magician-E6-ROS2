@@ -54,11 +54,11 @@ namespace approach
     : node_{ std::make_shared<rclcpp::Node>("approach_mtc", options) }
     {
 
-        // declare parameters
-        node_->declare_parameter("arm_group_name","me6_group");
-        node_->declare_parameter("hand_group_name","tester");
-        node_->declare_parameter("hand_frame","dummy_end_effector");
-        node_->declare_parameter("me6_group_home_pose", "home");
+        // declare parameters => not needed since automatically_declare_parameters_from_overrides
+        //node_->declare_parameter("arm_group_name","me6_group");
+        //node_->declare_parameter("hand_group_name","tester");
+        //node_->declare_parameter("hand_frame","dummy_end_effector");
+        //node_->declare_parameter("me6_group_home_pose", "home");
     }
 
     rclcpp::node_interfaces::NodeBaseInterface::SharedPtr MTCTaskNode::getNodeBaseInterface()
