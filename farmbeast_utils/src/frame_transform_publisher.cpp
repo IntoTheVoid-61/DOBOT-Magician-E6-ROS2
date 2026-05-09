@@ -102,9 +102,9 @@ private:
         geometry_msgs::msg::TransformStamped transform;
         try
         {
-            transform = tf_buffer_->lookupTransform(
-                target_frame_param_,
+            transform = tf_buffer_->lookupTransform( // this a bit is confusing -> returns pose of target_frame_param in source_frame_param coordinates
                 source_frame_param_,
+                target_frame_param_,
                 tf2::TimePointZero
             );
 
