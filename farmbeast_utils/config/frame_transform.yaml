@@ -1,0 +1,9 @@
+frame_transform_node:
+  ros__parameters:
+    source_frame: "base_link"
+    target_frame: "Link6"
+    publish_rate: 10.0
+
+
+
+
