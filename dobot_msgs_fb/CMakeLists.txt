@@ -8,21 +8,26 @@ endif()
 # find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(rosidl_default_generators REQUIRED)
-find_package(geometry_msgs)
-# uncomment the following section in order to fill in
-# further dependencies manually.
-# find_package(<dependency> REQUIRED)
+find_package(geometry_msgs REQUIRED)
+find_package(builtin_interfaces REQUIRED)
 
 # MoveToPose, depends on geometry_msgs
 rosidl_generate_interfaces(${PROJECT_NAME}
   "action/MoveToPose.action"
   "action/MoveToHome.action"
-  DEPENDENCIES geometry_msgs
+  "msg/FrameTransform.msg"
+  DEPENDENCIES geometry_msgs builtin_interfaces
 )
 
 # MoveToHome, no dependencies
 #rosidl_generate_interfaces(${PROJECT_NAME}
 #  "action/MoveToHome.action"
+#)
+
+# FrameTransform, depends on geometry_msgs and builtin_interfaces
+#rosidl_generate_interfaces(${PROJECT_NAME}
+#  "msg/FrameTransform.msg"
+#  DEPENDENCIES geometry_msgs builtin_interfaces
 #)
 
 if(BUILD_TESTING)
