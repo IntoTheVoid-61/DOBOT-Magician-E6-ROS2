@@ -47,7 +47,7 @@ def generate_launch_description():
     
     #--farmbeast_utils/launch/frame_transform.launch.py--#
     launch_file_name_ft = "frame_transform.launch.py"
-    utils_pkg_name = "farm_beast_utils"
+    utils_pkg_name = "farmbeast_utils"
     utils_pkg_share = get_package_share_directory(utils_pkg_name)
     frame_transform_path = os.path.join(utils_pkg_share,"launch",launch_file_name_ft)  
     frame_transform = IncludeLaunchDescription(
