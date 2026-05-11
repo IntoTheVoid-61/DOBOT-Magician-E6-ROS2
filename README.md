@@ -66,6 +66,13 @@ This repository contains all the necessary files used to integrate the Dobot-E6-
     ros2 launch dobot_moveit dobot_moveit.launch.py
     ```
 
+5. **Framework Launch**
+    - To launch the ROS2 framework in its entirety, run the command: (inside the respected folder)
+    ```bash
+    /.start_dobot.sh
+    ```
+
+
 ---
 ## **FarmBeast specific**
 **Packages containing FarmBeast specific implementation**
