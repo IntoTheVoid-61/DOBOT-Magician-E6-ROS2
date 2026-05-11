@@ -75,6 +75,14 @@ This repository contains all the necessary files used to integrate the Dobot-E6-
  - farmbeast_utils
 
 ---
+## **TODO FarmBeast specific**
+**Specific functionalities to add and or fix before deployment**
+ - Add perception framework and integrate into moveit_task_constructor framework
+ - Migrate necessary launch files to dobot_e6_bringup, with ExecuteTaskSolutionCapability
+ - Model the final end effector and add it to URDF
+ - Add hardware interface for the final end effector 
+
+---
 
 ## Notes
 1. Ensure connection is established via ping.
