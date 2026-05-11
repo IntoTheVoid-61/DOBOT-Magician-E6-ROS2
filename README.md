@@ -78,7 +78,7 @@ This repository contains all the necessary files used to integrate the Dobot-E6-
 ## **TODO FarmBeast specific**
 **Specific functionalities to add and or fix before deployment**
  - Add perception framework and integrate into moveit_task_constructor framework
- - Migrate necessary launch files to dobot_e6_bringup, with ExecuteTaskSolutionCapability
+ - Migrate necessary launch files to dobot_e6_bringup, with ExecuteTaskSolutionCapability and evaluate on real platform (partial completion)
  - Model the final end effector and add it to URDF
  - Add hardware interface for the final end effector 
 
@@ -91,5 +91,5 @@ This repository contains all the necessary files used to integrate the Dobot-E6-
 
 ---
 ## Other
-- **Last Updated**: May 09, 2026
+- **Last Updated**: May 11, 2026
 - **More Information**: https://github.com/Dobot-Arm/DOBOT_6Axis_ROS2_V4/tree/main
