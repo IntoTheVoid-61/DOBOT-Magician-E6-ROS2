@@ -1,0 +1,105 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+    <xacro:macro name="weed_removal_tool">
+        <link name="tool_link">
+            <inertial>
+                <origin xyz="0.0 0.0 0.03" rpy="0.0 0.0 0.0"/>
+                <mass value="0.23"/>
+                <inertia ixx="1e-5" ixy="0.0" ixz="0.0" iyy="1e-5" iyz="0.0" izz="1e-5"/>
+            </inertial>
+            <visual>
+                <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+                <geometry>
+                    <mesh filename="file://$(find dobot_e6_description)/meshes/weed_removal_tool/visual/gripper_housing.STL" />
+                </geometry>
+                <material name="green">
+                    <color rgba="0.0 1.0 0.0 1.0"/>
+                </material>
+            </visual>
+            <collision>
+                <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+                <geometry>
+                    <mesh filename="file://$(find dobot_e6_description)/meshes/weed_removal_tool/visual/gripper_housing.STL" />
+                </geometry>
+            </collision>
+        </link>
+
+        <link name="blade_left_link">
+            <inertial>
+                <origin xyz="0.0 0.02 0.0" rpy="0.0 0.0 0.0"/>
+                <mass value="0.03"/>
+                <inertia ixx="1e-5" ixy="0.0" ixz="0.0" iyy="1e-5" iyz="0.0" izz="1e-5"/>
+            </inertial>
+            <visual>
+                <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+                <geometry>
+                    <mesh filename="file://$(find dobot_e6_description)/meshes/weed_removal_tool/visual/blade_left.STL" />
+                </geometry>
+                <material name="green">
+                    <color rgba="0.0 1.0 0.0 1.0"/>
+                </material>
+            </visual>
+            <collision>
+                <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+                <geometry>
+                    <mesh filename="file://$(find dobot_e6_description)/meshes/weed_removal_tool/visual/blade_left.STL" />
+                </geometry>
+            </collision>
+        </link>
+
+        <link name="blade_right_link">
+            <inertial>
+                <origin xyz="0.0 -0.02 0.0" rpy="0.0 0.0 0.0"/>
+                <mass value="0.03"/>
+                <inertia ixx="1e-5" ixy="0.0" ixz="0.0" iyy="1e-5" iyz="0.0" izz="1e-5"/>
+            </inertial>
+            <visual>
+                <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+                <geometry>
+                    <mesh filename="file://$(find dobot_e6_description)/meshes/weed_removal_tool/visual/blade_right.STL" />
+                </geometry>
+                <material name="green">
+                    <color rgba="0.0 1.0 0.0 1.0"/>
+                </material>
+            </visual>
+            <collision>
+                <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+                <geometry>
+                    <mesh filename="file://$(find dobot_e6_description)/meshes/weed_removal_tool/visual/blade_right.STL" />
+                </geometry>
+            </collision>
+        </link>
+
+        <link name="dummy_tcp"/>
+
+
+        <joint name="joint_link6_to_tool_link" type="fixed">
+            <origin xyz="0.0 0.0 0.021"/>
+            <parent link="Link6"/>
+            <child link="tool_link"/>
+        </joint>
+
+        <joint name="joint_dummy_tcp" type="fixed">
+            <origin xyz="0.0 0.0 0.08"/>
+            <parent link="tool_link"/>
+            <child link="dummy_tcp"/>
+        </joint>
+
+        <joint name="gripper_controller" type="revolute">
+        <axis xyz="1 0 0"/>
+        <limit lower="0.0" upper="1.57" effort="56.0" velocity="2.792527"/>
+        <parent link="tool_link"/>
+        <child link="blade_left_link"/>
+        <origin xyz="0.0 0.023 0.030" rpy="0 0 0"/>
+        </joint>
+        
+        <joint name="joint_tool_link_to_blade_right_link" type="revolute">
+        <axis xyz="1 0 0"/>
+        <limit lower="0.0" upper="1.57" effort="56.0" velocity="2.792527"/>
+        <parent link="tool_link"/>
+        <child link="blade_right_link"/>
+        <origin xyz="0.0 -0.023 0.030" rpy="0 0 0"/>
+        <mimic joint="gripper_controller" multiplier="-1.0" offset="0"/>
+        </joint>    
+    </xacro:macro>
+</robot>
