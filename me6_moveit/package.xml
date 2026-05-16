@@ -6,15 +6,15 @@
   <description>
      An automatically generated package with all the configuration and launch files for using the me6_robot with the MoveIt Motion Planning Framework
   </description>
-  <maintainer email="futingxing@dobot-robot.com">dobot</maintainer>
+  <maintainer email="ziga.breznikar@student.um.si">ziga</maintainer>
 
-  <license>BSD</license>
+  <license>BSD-3-Clause</license>
 
   <url type="website">http://moveit.ros.org/</url>
-  <url type="bugtracker">https://github.com/ros-planning/moveit2/issues</url>
-  <url type="repository">https://github.com/ros-planning/moveit2</url>
+  <url type="bugtracker">https://github.com/moveit/moveit2/issues</url>
+  <url type="repository">https://github.com/moveit/moveit2</url>
 
-  <author email="futingxing@dobot-robot.com">FTX</author>
+  <author email="ziga.breznikar@student.um.si">ziga</author>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 
@@ -31,7 +31,7 @@
   <!-- <exec_depend>joint_trajectory_controller</exec_depend> -->
   <!-- <exec_depend>gazebo_ros_control</exec_depend> -->
   <exec_depend>controller_manager</exec_depend>
-  <!--exec_depend>dobot_rviz</exec_depend-->
+  <exec_depend>dobot_e6_description</exec_depend>
   <exec_depend>moveit_configs_utils</exec_depend>
   <exec_depend>moveit_ros_move_group</exec_depend>
   <exec_depend>moveit_ros_visualization</exec_depend>
@@ -42,7 +42,7 @@
   <exec_depend>rviz_common</exec_depend>
   <exec_depend>rviz_default_plugins</exec_depend>
   <exec_depend>tf2_ros</exec_depend>
-  <!--exec_depend>warehouse_ros_mongo</exec_depend-->
+  <exec_depend>warehouse_ros_mongo</exec_depend>
   <exec_depend>xacro</exec_depend>
 
 
