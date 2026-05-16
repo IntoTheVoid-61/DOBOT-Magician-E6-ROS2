@@ -18,12 +18,16 @@ It configures the robot state publisher and handles the processing of the URDF/X
 
 ARGUMENTS = [
 
-    DeclareLaunchArgument('use_tester_end_effector',default_value="true",
+    DeclareLaunchArgument('use_tester_end_effector',default_value="false",
                           choices=['true','false'],
                           description='Whether to test end effector'),     
 
     DeclareLaunchArgument('robot_name',default_value="me6_robot",
                           description='Name of the robot'),
+    
+    DeclareLaunchArgument('use_weed_removal_tool',default_value="true",
+                          choices=['true','false'],
+                          description='Whether to use_weed removal tool'),  
 ]
 
 
@@ -108,6 +112,7 @@ def generate_launch_description():
         'xacro', ' ', urdf_model, ' ',
         'robot_name:=', LaunchConfiguration('robot_name'), ' ',
         'use_tester_end_effector:=',LaunchConfiguration('use_tester_end_effector'),' ',
+        'use_weed_removal_tool:=',LaunchConfiguration('use_weed_removal_tool'),' ',
     ]), value_type=str)
 
     #--Defining nodes--#
