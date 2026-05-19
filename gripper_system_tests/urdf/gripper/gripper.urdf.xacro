@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="gripper">
+
+    <xacro:include filename="$(find gripper_system_tests)/urdf/mech/gripper.urdf.xacro"/>
+    <xacro:include filename="$(find gripper_system_tests)/urdf/control/gripper_control.urdf.xacro"/>
+
+    <xacro:gripper/>
+    <xacro:gripper_ros2_control/>
+
+</robot>

@@ -1,0 +1,12 @@
+<!--type is equal to namespace::ClassName in .cpp / .hpp definition-->
+<!--class name is equal as in <plugin> tag in control urdf-->
+
+<library path="gripper_hardware_interface">
+  <class name="gripper_arduino/GripperSystemHardware"
+         type="gripper_arduino::GripperSystemHardware"
+         base_class_type="hardware_interface::SystemInterface">
+    <description>
+      Hardware Interface for gripper.
+    </description>
+  </class>
+</library>

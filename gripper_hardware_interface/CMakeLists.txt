@@ -7,9 +7,51 @@ endif()
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
+find_package(hardware_interface REQUIRED)
+find_package(rclcpp REQUIRED)
+find_package(pluginlib REQUIRED)
 # uncomment the following section in order to fill in
 # further dependencies manually.
 # find_package(<dependency> REQUIRED)
+
+#--- Vendor serial library ---#
+add_subdirectory(serial_lib)
+
+#--- Create plugin library ---#
+add_library(gripper_hardware_interface SHARED src/arduino_comms.cpp src/gripper_system.cpp)
+
+# THIS FIXES THE LINKER ERROR
+set_target_properties(serial PROPERTIES POSITION_INDEPENDENT_CODE ON)
+
+# Include directories
+target_include_directories(
+  gripper_hardware_interface
+  PRIVATE
+  include
+  serial_lib/include
+)
+
+# Link dependencies
+ament_target_dependencies(
+  gripper_hardware_interface
+  hardware_interface
+  rclcpp
+  pluginlib
+)
+
+# Link vendored library
+target_link_libraries(gripper_hardware_interface serial)
+
+
+pluginlib_export_plugin_description_file(hardware_interface gripper_hardware.xml)
+
+install(
+  TARGETS gripper_hardware_interface
+  DESTINATION lib
+)
+
+
+
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
