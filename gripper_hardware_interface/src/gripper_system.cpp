@@ -102,6 +102,7 @@ hardware_interface::CallbackReturn gripper_arduino::GripperSystemHardware::on_ac
     try
     {
         arduino_.setPosition(0.0);
+        previous_command = 0.0;
     }
     catch(const std::exception& e)
     {
@@ -143,6 +144,49 @@ hardware_interface::CallbackReturn gripper_arduino::GripperSystemHardware::on_de
 
 hardware_interface::return_type gripper_arduino::GripperSystemHardware::read(const rclcpp::Time & time, const rclcpp::Duration & period)
     {
+        if (!arduino_.connected()){
+            RCLCPP_ERROR(rclcpp::get_logger("GripperHardware"),
+                "Could not establish controller connection, Arduino not responding!"); 
+            return hardware_interface::return_type::ERROR;            
+        }
+        
+        try
+        {
+            std::string msg = arduino_.readPosition();
+
+            if(!msg.empty()){
+
+                msg.erase(
+                    std::remove(msg.begin(), msg.end(), '\n'),
+                    msg.end()
+                );
+
+                msg.erase(
+                    std::remove(msg.begin(), msg.end(), '\r'),
+                    msg.end()
+                );
+
+                if (msg[0] == 'P'){
+                    RCLCPP_INFO(
+                        rclcpp::get_logger("GripperHardware"),
+                        "received state: %s",
+                        msg.c_str()
+                    );
+                    double pos = std::stod(msg.substr(1));
+
+                    hw_states[0] = pos;
+                }
+            }
+        }
+        catch(const std::exception& e)
+        {
+        RCLCPP_ERROR(
+            rclcpp::get_logger("GripperHardware"),
+            "Read failed: %s",
+            e.what());
+            return hardware_interface::return_type::ERROR;
+        }
+        
         return hardware_interface::return_type::OK;
     }
 
@@ -157,13 +201,18 @@ hardware_interface::return_type gripper_arduino::GripperSystemHardware::write(co
     
     const double gripper_command = hw_commands[0];
 
-    RCLCPP_INFO(
-        rclcpp::get_logger("GripperHardware"),
-        "Sending gripper command: command=%f",
-        gripper_command
-        );
+    if (std::abs(gripper_command - previous_command) > 0.2){
 
-    arduino_.setPosition(gripper_command);
+        RCLCPP_INFO(
+            rclcpp::get_logger("GripperHardware"),
+            "Sending gripper command: command=%f",
+            gripper_command
+            );
+            
+        arduino_.setPosition(gripper_command);
+        previous_command = gripper_command;
+        
+    }
 
     return hardware_interface::return_type::OK;
 

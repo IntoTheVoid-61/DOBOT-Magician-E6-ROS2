@@ -22,3 +22,12 @@ void ArduinoComms::sendCommand(const std::string &position)
 {
     serial_conn_.write(position);
 }
+
+std::string ArduinoComms::readPosition()
+{
+
+    if(serial_conn_.available()){
+        return serial_conn_.readline();
+    }
+    return "";
+}

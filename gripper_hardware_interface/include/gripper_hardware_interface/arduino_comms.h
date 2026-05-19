@@ -30,7 +30,7 @@ public:
     // send commands
     void setPosition(const double position);
     void sendCommand(const std::string &position);
-    // TODO: add method for receiving data
+    std::string readPosition();
     // check if connection is established
     bool connected() const { return serial_conn_.isOpen(); } 
 private:

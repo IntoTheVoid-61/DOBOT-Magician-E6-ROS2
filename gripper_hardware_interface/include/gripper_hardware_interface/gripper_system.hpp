@@ -78,5 +78,6 @@ private:
     ArduinoComms arduino_;
     std::vector<double> hw_states; // Stores data about positional state of gripper joint
     std::vector<double> hw_commands; // Stores command data
+    double previous_command; // compares absolute diff with current command
 }; // GripperSystemHardware
 } // namespace gripper_arduino
