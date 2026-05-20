@@ -16,7 +16,7 @@ hardware_interface::CallbackReturn gripper_arduino::GripperSystemHardware::on_in
     {
         const auto &p = info_.hardware_parameters;
 
-        // serial conn specifc
+        // serial conn specific
         config_.serial_device = p.at("serial_device");
         config_.baud_rate = std::stoi(p.at("baud_rate"));
         config_.timeout = std::stoi(p.at("timeout"));
