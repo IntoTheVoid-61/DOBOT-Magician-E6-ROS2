@@ -5,11 +5,14 @@
     <xacro:arg name="use_weed_removal_tool" default="true"/>
     <xacro:arg name="robot_name" default="me6_robot"/>
     <xacro:arg name='use_mock_hardware' default='false'/>
+    <xacro:arg name='use_gripper_hardware_interface' default='true'/>
+    
 
     <xacro:include filename="$(find dobot_e6_description)/urdf/mech/dobot_e6_arm.urdf.xacro"/>
     <xacro:include filename="$(find dobot_e6_description)/urdf/mech/tester_end_effector.urdf.xacro"/>
     <xacro:include filename="$(find dobot_e6_description)/urdf/mech/weed_removal_tool.urdf.xacro"/>
     <xacro:include filename="$(find dobot_e6_description)/urdf/control/dobot_e6_ros2_control.urdf.xacro"/> 
+    <xacro:include filename="$(find dobot_e6_description)/urdf/control/gripper_control.urdf.xacro"/>
 
     <xacro:dobot_e6_arm/>
     <!-- if argument for test end_effector-->
@@ -25,7 +28,9 @@
         <xacro:weed_removal_tool/>
     </xacro:if>
 
-    <!--xacro:dobot_e6_ros2_control
-        use_mock_hardware="$(arg use_mock_hardware)"/-->
+    <xacro:if value="$(arg use_gripper_hardware_interface)">
+        <xacro:gripper_ros2_control/>
+    </xacro:if>    
+
     
 </robot>

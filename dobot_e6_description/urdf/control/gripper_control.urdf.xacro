@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <xacro:macro name="gripper_ros2_control">
+    <ros2_control name="GripperSystem" type="system">
+      <hardware>
+        <plugin>gripper_arduino/GripperSystemHardware</plugin>
+        <param name="serial_device">/dev/ttyUSB0</param>
+        <param name="baud_rate">57600</param>
+        <param name="timeout">1000</param>
+        <param name="loop_rate">10</param>
+        <param name="gripper_joint_name">gripper_controller</param>
+      </hardware>
+
+      <joint name="gripper_controller">
+        <command_interface name="position"/>
+        <state_interface name="position"/>
+      </joint>
+    </ros2_control>
+  </xacro:macro>
+</robot>

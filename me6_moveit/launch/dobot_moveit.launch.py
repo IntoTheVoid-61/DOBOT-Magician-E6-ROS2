@@ -25,7 +25,7 @@ def generate_launch_description():
     # 启动rviz
     my_generate_moveit_rviz_launch(ld, moveit_config)
     # execute_task_solution
-    generate_launch_move_group(ld,moveit_config)
+    #generate_launch_move_group(ld,moveit_config)
 
     return ld
 def my_generate_rsp_launch(ld,moveit_config):

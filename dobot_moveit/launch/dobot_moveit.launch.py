@@ -27,6 +27,14 @@ def generate_launch_description():
     included_launch = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(moveit_model_path)
     )
+
+    #--gripper_bringup.launch.py--#
+    gripper_launch = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            os.path.join(get_package_share_directory("farmbeast_utils"),
+                         "launch","gripper_bringup.launch.py")
+        )
+    )
     
     #--dobot_moveit/launch/dobot_joint.launch.py
     joint_name = "dobot_joint.launch.py"
@@ -57,6 +65,7 @@ def generate_launch_description():
 
     ld.add_action(joint_name_launch)
     ld.add_action(included_launch)
+    ld.add_action(gripper_launch)
     ld.add_action(fb_actions)
     ld.add_action(frame_transform)
     return ld
