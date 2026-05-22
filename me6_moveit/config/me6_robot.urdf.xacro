@@ -1,12 +1,33 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="me6_robot">
     <xacro:arg name="initial_positions_file" default="initial_positions.yaml" />
+    <xacro:arg name='use_real_hardware' default='false'/> 
+
+    <xacro:include filename="$(find dobot_e6_description)/urdf/mech/dobot_e6_arm.urdf.xacro"/>
+    <xacro:include filename="$(find dobot_e6_description)/urdf/mech/weed_removal_tool.urdf.xacro"/>
+    <xacro:include filename="$(find dobot_e6_description)/urdf/control/gripper_control.urdf.xacro"/>
+    <xacro:include filename="me6_robot.ros2_control.xacro" />
+
+    <xacro:dobot_e6_arm/>
+
+    <xacro:weed_removal_tool/>
+
+    <xacro:if value="$(arg use_real_hardware)">
+        <xacro:gripper_ros2_control/>
+    </xacro:if>
+
+    <xacro:unless value="$(arg use_real_hardware)">
+        <xacro:me6_robot_ros2_control name="FakeSystem" initial_positions_file="$(arg initial_positions_file)"/>
+    </xacro:unless>
+
+
+
 
     <!-- Import me6_robot urdf file -->
-    <xacro:include filename="$(find dobot_e6_description)/urdf/robots/dobot_e6.urdf.xacro" />
+    <!--xacro:include filename="$(find dobot_e6_description)/urdf/robots/dobot_e6.urdf.xacro" /-->
 
     <!-- Import control_xacro -->
-    <xacro:include filename="me6_robot.ros2_control.xacro" />
+    <!--xacro:include filename="me6_robot.ros2_control.xacro" /-->
 
 
     <!--xacro:me6_robot_ros2_control name="FakeSystem" initial_positions_file="$(arg initial_positions_file)"/-->
