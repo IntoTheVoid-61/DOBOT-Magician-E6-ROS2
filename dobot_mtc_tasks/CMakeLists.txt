@@ -22,6 +22,9 @@ install (
 # add approach_mtc executable
 add_executable(approach_mtc src/approach_mtc.cpp)
 
+# add approach executable
+add_executable(remove_weed_mtc src/remove_weed_mtc.cpp)
+
 # specify dependencies for approach_mtc
 ament_target_dependencies(
   approach_mtc
@@ -29,9 +32,16 @@ ament_target_dependencies(
   rclcpp
 )
 
+# specify dependencies for remove_weed_mtc
+ament_target_dependencies(
+  remove_weed_mtc
+  moveit_task_constructor_core
+  rclcpp
+)
+
 # Install the executable for approach_mtc
 install(TARGETS
-  approach_mtc
+  approach_mtc remove_weed_mtc
   DESTINATION lib/${PROJECT_NAME}
 )
 
