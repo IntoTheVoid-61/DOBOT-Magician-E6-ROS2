@@ -89,6 +89,7 @@ def generate_launch_description():
     for controller in [
         "me6_group_controller",
         "joint_state_broadcaster",
+        "gripper_action_controller"
     ]:
         load_controllers += [
             ExecuteProcess(
