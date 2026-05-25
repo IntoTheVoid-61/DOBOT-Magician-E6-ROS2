@@ -16,7 +16,19 @@ import time
 import os
 from launch_ros.actions import Node
 def generate_launch_description():
-    moveit_config = MoveItConfigsBuilder("me6_robot", package_name="me6_moveit").to_moveit_configs()
+    #moveit_config = MoveItConfigsBuilder("me6_robot", package_name="me6_moveit").to_moveit_configs()
+
+    # Reading me6_robot.urdf.xacro with use_real_hardware argument to true
+    moveit_config = (
+        MoveItConfigsBuilder("me6_robot", package_name="me6_moveit")
+        .robot_description(
+            file_path="config/me6_robot.urdf.xacro",
+            mappings={
+                "use_real_hardware": "true",
+            },
+        )
+        .to_moveit_configs()
+    )
 
     ld = LaunchDescription()
     my_generate_rsp_launch(ld, moveit_config)

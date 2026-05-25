@@ -14,7 +14,19 @@ from moveit_configs_utils import MoveItConfigsBuilder
 
 def generate_launch_description():
     # planning_context
-    moveit_config = MoveItConfigsBuilder("me6_robot", package_name="me6_moveit").to_moveit_configs()
+    #moveit_config = MoveItConfigsBuilder("me6_robot", package_name="me6_moveit").to_moveit_configs()
+
+    # Reading me6_robot.urdf.xacro with use_real_hardware argument to false
+    moveit_config = (
+        MoveItConfigsBuilder("me6_robot", package_name="me6_moveit")
+        .robot_description(
+            file_path="config/me6_robot.urdf.xacro",
+            mappings={
+                "use_real_hardware": "false",
+            },
+        )
+        .to_moveit_configs()
+    )
 
     # Load  ExecuteTaskSolutionCapability so we can execute found solutions in simulation
     move_group_capabilities = {
