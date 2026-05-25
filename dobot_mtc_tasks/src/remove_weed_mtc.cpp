@@ -43,6 +43,7 @@ namespace remove_weed
         mtc::Task task_;
         rclcpp::Node::SharedPtr node_;
         geometry_msgs::msg::PoseStamped object_pose_; // object pose
+        geometry_msgs::msg::PoseStamped dumping_pose_; // pose for dumping weed
     }; // MTCTaskNode
 
     MTCTaskNode::MTCTaskNode(const rclcpp::NodeOptions& options)
@@ -58,6 +59,7 @@ namespace remove_weed
 
     void MTCTaskNode::setupPlanningScene()
     {
+        // MATIJA: Tukaj bomo najverjetneje klicali service namesto hard coded values
         moveit_msgs::msg::CollisionObject object;
         object.id = "object";
         object.header.frame_id = "base_link";
@@ -69,8 +71,8 @@ namespace remove_weed
         pose.position.x = -0.2;
         pose.position.y = 0.15;
         pose.position.z = 0.1;
-        pose.orientation.z = 1.0;
-        pose.orientation.w = 0.0; // Force this to 0
+        pose.orientation.z = 0.0;
+        pose.orientation.w = 1.0; 
         object.pose = pose;
 
         // setting up object_pose_ 
@@ -122,7 +124,7 @@ namespace remove_weed
     mtc::Task MTCTaskNode::createTask()
     {
     mtc::Task task;
-    task.stages()->setName("removal task");
+    task.stages()->setName("weed removal task");
     task.loadRobotModel(node_);
 
     const auto& arm_group_name = "me6_group";
@@ -130,11 +132,22 @@ namespace remove_weed
     const auto& hand_frame = "dummy_tcp";
 
     // Set task properties
-    task.setProperty("group", arm_group_name);
-    task.setProperty("eef", hand_group_name);
-    task.setProperty("ik_frame", hand_frame);
+    task.setProperty("group", arm_group_name); // manipulator group
+    task.setProperty("eef", hand_group_name); // gripper group
+    task.setProperty("ik_frame", hand_frame); // TCP of gripper
 
-    // add dumping robot pose defined in srdf file read from yaml file here. 
+    // Defining dumping pose, read from yaml
+    dumping_pose_.header.frame_id = node_->get_parameter("dumping_pose.header.frame_id").as_string();
+
+    dumping_pose_.pose.position.x = node_->get_parameter("dumping_pose.position.x").as_double();
+    dumping_pose_.pose.position.y = node_->get_parameter("dumping_pose.position.y").as_double();
+    dumping_pose_.pose.position.z = node_->get_parameter("dumping_pose.position.z").as_double();
+
+    dumping_pose_.pose.orientation.x = node_->get_parameter("dumping_pose.orientation.x").as_double();
+    dumping_pose_.pose.orientation.y = node_->get_parameter("dumping_pose.orientation.y").as_double();
+    dumping_pose_.pose.orientation.z = node_->get_parameter("dumping_pose.orientation.z").as_double();
+    dumping_pose_.pose.orientation.w = node_->get_parameter("dumping_pose.orientation.w").as_double();
+
 
     // Initialize planners for different types of motions
     auto sampling_planner = std::make_shared<mtc::solvers::PipelinePlanner>(node_);
@@ -142,9 +155,10 @@ namespace remove_weed
     auto cartesian_planner = std::make_shared<mtc::solvers::CartesianPath>();
     cartesian_planner->setMaxVelocityScalingFactor(1.0);
     cartesian_planner->setMaxAccelerationScalingFactor(1.0);
-    cartesian_planner->setStepSize(.01);
+    cartesian_planner->setStepSize(.05); // desired step size in m
 
     mtc::Stage* current_state_ptr = nullptr;
+    mtc::Stage* attach_weed_ptr = nullptr;
 
     /****************************************************
      *                                                  *
@@ -155,22 +169,6 @@ namespace remove_weed
     auto stage_state_current = std::make_unique<mtc::stages::CurrentState>("current");
     current_state_ptr = stage_state_current.get();
     task.add(std::move(stage_state_current));
-
-    /****************************************************
-     *                                                  *
-     *                  Close Hand                      *
-     *                                                  *
-     ***************************************************/ 
-
-    /*
-
-    auto stage_open_hand =
-        std::make_unique<mtc::stages::MoveTo>("close hand", interpolation_planner);
-    stage_open_hand->setGroup(hand_group_name);
-    stage_open_hand->setGoal("closed");
-    task.add(std::move(stage_open_hand));
-
-    */
 
     /****************************************************
      *                                                  *
@@ -223,6 +221,13 @@ namespace remove_weed
             /****************************************
             *           Generate Grasp Poses        *
             ****************************************/ 
+            /*
+            This part is a bit confusing so descriptive comment follows:
+                First section is responsible for generating IK poses
+                Second section: grasp_frame_transform
+                    It rotates and translated the hand frame
+                    Tries to align the transformed frame (generate_frame_transform) with IK poses
+            */
             auto stage = std::make_unique<mtc::stages::GenerateGraspPose>("generate removal pose");
             stage->properties().configureInitFrom(mtc::Stage::PARENT);
             stage->properties().set("marker_ns", "grasp_pose");
@@ -238,7 +243,7 @@ namespace remove_weed
                                 Eigen::AngleAxisd(0, Eigen::Vector3d::UnitY()) *
                                 Eigen::AngleAxisd(0, Eigen::Vector3d::UnitZ()); 
             grasp_frame_transform.linear() = q.matrix();
-            grasp_frame_transform.translation().z() = 0.1;
+            grasp_frame_transform.translation().z() = 0.05;
 
             auto wrapper =
             std::make_unique<mtc::stages::ComputeIK>("grasp pose IK", std::move(stage));
@@ -260,7 +265,7 @@ namespace remove_weed
                 std::make_unique<mtc::stages::ModifyPlanningScene>("allow collision (hand, weed)");
                 stage->allowCollisions("object",
                                     task.getRobotModel()
-                                        ->getJointModelGroup(hand_group_name)
+                                        //->getJointModelGroup(hand_group_name) // disabled since it reports collision (it should not)
                                         ->getLinkModelNamesWithCollisionGeometry(),
                                     true);
             stage_pull_weed->insert(std::move(stage));
@@ -281,7 +286,7 @@ namespace remove_weed
             ****************************************/ 
             auto stage = std::make_unique<mtc::stages::ModifyPlanningScene>("attach weed");
             stage->attachObject("object", hand_frame);
-            //attach_object_stage = stage.get();
+            attach_weed_ptr = stage.get();
             stage_pull_weed->insert(std::move(stage));
 
         }
@@ -290,7 +295,7 @@ namespace remove_weed
             auto stage =
                 std::make_unique<mtc::stages::MoveRelative>("lift object", cartesian_planner);
             stage->properties().configureInitFrom(mtc::Stage::PARENT, { "group" });
-            stage->setMinMaxDistance(0.01, 0.3);
+            stage->setMinMaxDistance(0.01, 0.3); // edit this for pulling the weed out
             stage->setIKFrame(hand_frame);
             stage->properties().set("marker_ns", "lift_object");
 
@@ -306,19 +311,18 @@ namespace remove_weed
 
     }
 
-    // maybe connector?
-
     /****************************************************
      *                                                  *
      *         Move To Dump                             *
      *                                                  *
      ***************************************************/ 
-    // perhaps better a random pose with specified general area
-    auto stage_move_to_dump =
-        std::make_unique<mtc::stages::MoveTo>("move to dump weed", interpolation_planner);
-    stage_move_to_dump->properties().configureInitFrom(mtc::Stage::PARENT, { "group" });
-    stage_move_to_dump->setGoal("drop");
-    task.add(std::move(stage_move_to_dump));
+
+    auto stage_move_to_dump = std::make_unique<mtc::stages::Connect>(
+            "move_to_dump",
+            mtc::stages::Connect::GroupPlannerVector{ {arm_group_name, sampling_planner} });
+    stage_move_to_dump->setTimeout(5.0);
+    stage_move_to_dump->properties().configureInitFrom(mtc::Stage::PARENT);
+    task.add(std::move(stage_move_to_dump));    
 
     /****************************************************
      *                                                  *
@@ -330,6 +334,29 @@ namespace remove_weed
         auto stage_drop_weed = std::make_unique<mtc::SerialContainer>("dump weed");
         task.properties().exposeTo(stage_drop_weed->properties(), { "eef", "group", "ik_frame" });
         stage_drop_weed->properties().configureInitFrom(mtc::Stage::PARENT,{ "eef", "group", "ik_frame" });
+
+
+        {
+            auto stage = std::make_unique<mtc::stages::GeneratePlacePose>("generate dumping pose");
+            stage->properties().configureInitFrom(mtc::Stage::PARENT);
+            stage->properties().set("marker_ns", "place_pose");
+            stage->setObject("object");
+            stage->setPose(dumping_pose_);
+
+            stage->setMonitoredStage(attach_weed_ptr);
+
+            auto wrapper =
+                std::make_unique<mtc::stages::ComputeIK>("dump pose IK", std::move(stage));
+            wrapper->setMaxIKSolutions(2);
+            wrapper->setMinSolutionDistance(1.0);
+            wrapper->setIKFrame("object");
+            wrapper->properties().configureInitFrom(mtc::Stage::PARENT, { "eef", "group" });
+            wrapper->properties().configureInitFrom(mtc::Stage::INTERFACE, { "target_pose" });
+    
+            stage_drop_weed->insert(std::move(wrapper));
+
+        }
+
 
         {
             /****************************************
@@ -371,7 +398,7 @@ namespace remove_weed
             auto stage =
                 std::make_unique<mtc::stages::MoveRelative>("retreat", cartesian_planner);
             stage->properties().configureInitFrom(mtc::Stage::PARENT, { "group" });
-            stage->setMinMaxDistance(-1.0, 0.3); // No need to move
+            stage->setMinMaxDistance(0.0, 0.5); // No need to move
             stage->setIKFrame(hand_frame);
             stage->properties().set("marker_ns", "retreat");
 

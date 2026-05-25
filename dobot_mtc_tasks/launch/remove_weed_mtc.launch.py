@@ -13,7 +13,7 @@ def generate_launch_description():
 
     # path to config file
     config_file = os.path.join(get_package_share_directory("dobot_mtc_tasks"),
-                               "config","remove_params.yaml")
+                               "config","remove_weed_params.yaml")
 
     remove_weed_mtc = Node(
         package="dobot_mtc_tasks",

@@ -1,0 +1,14 @@
+remove_weed_mtc:
+  ros__parameters:
+    dumping_pose:
+      position:
+        x: -0.25
+        y: -0.15
+        z: 0.15
+      orientation:
+        x: 0.0
+        y: 0.0
+        z: 0.0
+        w: 1.0
+      header:
+        frame_id: "base_link"
