@@ -66,9 +66,9 @@ namespace remove_weed
         object.primitives[0].dimensions = { 0.1, 0.02 };
 
         geometry_msgs::msg::Pose pose;
-        pose.position.x = -0.4;
+        pose.position.x = -0.2;
         pose.position.y = 0.15;
-        pose.position.z = 0.4;
+        pose.position.z = 0.1;
         pose.orientation.z = 1.0;
         pose.orientation.w = 0.0; // Force this to 0
         object.pose = pose;
@@ -146,15 +146,258 @@ namespace remove_weed
 
     mtc::Stage* current_state_ptr = nullptr;
 
+    /****************************************************
+     *                                                  *
+     *               Current State                      *
+     *                                                  *
+     ***************************************************/    
+
     auto stage_state_current = std::make_unique<mtc::stages::CurrentState>("current");
     current_state_ptr = stage_state_current.get();
     task.add(std::move(stage_state_current));
+
+    /****************************************************
+     *                                                  *
+     *                  Close Hand                      *
+     *                                                  *
+     ***************************************************/ 
+
+    /*
 
     auto stage_open_hand =
         std::make_unique<mtc::stages::MoveTo>("close hand", interpolation_planner);
     stage_open_hand->setGroup(hand_group_name);
     stage_open_hand->setGoal("closed");
     task.add(std::move(stage_open_hand));
+
+    */
+
+    /****************************************************
+     *                                                  *
+     *                Move to Weed                      *
+     *                                                  *
+     ***************************************************/ 
+
+    auto stage_move_to_weed = std::make_unique<mtc::stages::Connect>(
+            "move_to_weed",
+            mtc::stages::Connect::GroupPlannerVector{ {arm_group_name, sampling_planner} });
+    stage_move_to_weed->setTimeout(5.0);
+    stage_move_to_weed->properties().configureInitFrom(mtc::Stage::PARENT);
+    task.add(std::move(stage_move_to_weed));
+
+    /****************************************************
+     *                                                  *
+     *         Pull Weed Serial Container               *
+     *                                                  *
+     ***************************************************/  
+    
+    {
+        auto stage_pull_weed = std::make_unique<mtc::SerialContainer>("pull weed");
+        // Declare the task properties from the parent task in the serial container
+        task.properties().exposeTo(stage_pull_weed->properties(), { "eef", "group", "ik_frame" });
+        // Initialize properties so contained stages can access them
+        stage_pull_weed->properties().configureInitFrom(mtc::Stage::PARENT,{ "eef", "group", "ik_frame" });
+
+        {
+
+            /****************************************
+            *           Move Relative               *
+            ****************************************/ 
+
+            auto stage =
+            std::make_unique<mtc::stages::MoveRelative>("cartesian approach weed", cartesian_planner);
+            stage->properties().set("marker_ns", "approach_object");
+            stage->properties().set("link", hand_frame);
+            stage->properties().configureInitFrom(mtc::Stage::PARENT, { "group" });
+            stage->setMinMaxDistance(0.01, 0.3);
+
+            // Set hand forward direction
+            geometry_msgs::msg::Vector3Stamped vec;
+            vec.header.frame_id = hand_frame;
+            vec.vector.z = 1.0;
+            stage->setDirection(vec);
+            stage_pull_weed->insert(std::move(stage));
+        }
+
+        {
+            /****************************************
+            *           Generate Grasp Poses        *
+            ****************************************/ 
+            auto stage = std::make_unique<mtc::stages::GenerateGraspPose>("generate removal pose");
+            stage->properties().configureInitFrom(mtc::Stage::PARENT);
+            stage->properties().set("marker_ns", "grasp_pose");
+            stage->setPreGraspPose("open");
+            stage->setObject("object");
+            stage->setAngleDelta(M_PI / 12);
+            stage->setMonitoredStage(current_state_ptr);
+
+            // extrinsically rotate around x for 180
+            // Extrinsic ZYX rotation <-> Intrinsic XYZ
+            Eigen::Isometry3d grasp_frame_transform;
+            Eigen::Quaterniond q = Eigen::AngleAxisd(M_PI, Eigen::Vector3d::UnitX()) *
+                                Eigen::AngleAxisd(0, Eigen::Vector3d::UnitY()) *
+                                Eigen::AngleAxisd(0, Eigen::Vector3d::UnitZ()); 
+            grasp_frame_transform.linear() = q.matrix();
+            grasp_frame_transform.translation().z() = 0.1;
+
+            auto wrapper =
+            std::make_unique<mtc::stages::ComputeIK>("grasp pose IK", std::move(stage));
+            wrapper->setMaxIKSolutions(8);
+            wrapper->setMinSolutionDistance(1.0);
+            wrapper->setIKFrame(grasp_frame_transform, hand_frame);
+            wrapper->properties().configureInitFrom(mtc::Stage::PARENT, { "eef", "group" });
+            wrapper->properties().configureInitFrom(mtc::Stage::INTERFACE, { "target_pose" });
+            stage_pull_weed->insert(std::move(wrapper));
+
+        }
+
+        {
+            /****************************************
+            *           Allow Collision             *
+            ****************************************/ 
+
+            auto stage =
+                std::make_unique<mtc::stages::ModifyPlanningScene>("allow collision (hand, weed)");
+                stage->allowCollisions("object",
+                                    task.getRobotModel()
+                                        ->getJointModelGroup(hand_group_name)
+                                        ->getLinkModelNamesWithCollisionGeometry(),
+                                    true);
+            stage_pull_weed->insert(std::move(stage));
+
+        }
+
+        {
+            auto stage =
+                std::make_unique<mtc::stages::MoveTo>("close gripper", interpolation_planner);
+            stage->setGroup(hand_group_name);
+            stage->setGoal("closed");
+            stage_pull_weed->insert(std::move(stage));
+        }
+
+        {
+            /****************************************
+            *           Attach weed                 *
+            ****************************************/ 
+            auto stage = std::make_unique<mtc::stages::ModifyPlanningScene>("attach weed");
+            stage->attachObject("object", hand_frame);
+            //attach_object_stage = stage.get();
+            stage_pull_weed->insert(std::move(stage));
+
+        }
+
+        {
+            auto stage =
+                std::make_unique<mtc::stages::MoveRelative>("lift object", cartesian_planner);
+            stage->properties().configureInitFrom(mtc::Stage::PARENT, { "group" });
+            stage->setMinMaxDistance(0.01, 0.3);
+            stage->setIKFrame(hand_frame);
+            stage->properties().set("marker_ns", "lift_object");
+
+            // Set upward direction
+            geometry_msgs::msg::Vector3Stamped vec;
+            vec.header.frame_id = "world";
+            vec.vector.z = 1.0;
+            stage->setDirection(vec);
+            stage_pull_weed->insert(std::move(stage));
+        }
+
+        task.add(std::move(stage_pull_weed));
+
+    }
+
+    // maybe connector?
+
+    /****************************************************
+     *                                                  *
+     *         Move To Dump                             *
+     *                                                  *
+     ***************************************************/ 
+    // perhaps better a random pose with specified general area
+    auto stage_move_to_dump =
+        std::make_unique<mtc::stages::MoveTo>("move to dump weed", interpolation_planner);
+    stage_move_to_dump->properties().configureInitFrom(mtc::Stage::PARENT, { "group" });
+    stage_move_to_dump->setGoal("drop");
+    task.add(std::move(stage_move_to_dump));
+
+    /****************************************************
+     *                                                  *
+     *         Drop Weed Serial Container               *
+     *                                                  *
+     ***************************************************/ 
+
+    {
+        auto stage_drop_weed = std::make_unique<mtc::SerialContainer>("dump weed");
+        task.properties().exposeTo(stage_drop_weed->properties(), { "eef", "group", "ik_frame" });
+        stage_drop_weed->properties().configureInitFrom(mtc::Stage::PARENT,{ "eef", "group", "ik_frame" });
+
+        {
+            /****************************************
+            *           Open gripper                *
+            ****************************************/ 
+            auto stage = 
+                std::make_unique<mtc::stages::MoveTo>("open gripper", interpolation_planner);
+            stage->setGroup(hand_group_name);
+            stage->setGoal("open");
+            stage_drop_weed->insert(std::move(stage));
+        }
+
+        {
+            /****************************************
+            *           Forbid collision            *
+            ****************************************/ 
+            auto stage =
+                std::make_unique<mtc::stages::ModifyPlanningScene>("forbid collision (hand,object)");
+            stage->allowCollisions("object",
+                                task.getRobotModel()
+                                    ->getJointModelGroup(hand_group_name)
+                                    ->getLinkModelNamesWithCollisionGeometry(),
+                                false);
+            stage_drop_weed->insert(std::move(stage));
+        }
+            /****************************************
+            *           Detach object               *
+            ****************************************/ 
+            auto stage = std::make_unique<mtc::stages::ModifyPlanningScene>("detach object");
+            stage->detachObject("object", hand_frame);
+            stage_drop_weed->insert(std::move(stage));
+
+        {
+
+            /****************************************
+            *           Retreat                     *
+            ****************************************/ 
+
+            auto stage =
+                std::make_unique<mtc::stages::MoveRelative>("retreat", cartesian_planner);
+            stage->properties().configureInitFrom(mtc::Stage::PARENT, { "group" });
+            stage->setMinMaxDistance(-1.0, 0.3); // No need to move
+            stage->setIKFrame(hand_frame);
+            stage->properties().set("marker_ns", "retreat");
+
+            // retreat direction
+            geometry_msgs::msg::Vector3Stamped vec;
+            vec.header.frame_id = "world";
+            vec.vector.z = 1.0;
+            stage->setDirection(vec);
+            stage_drop_weed->insert(std::move(stage));
+
+        }
+
+        task.add(std::move(stage_drop_weed));
+    } 
+
+    /****************************************************
+     *                                                  *
+     *         Move To Home                             *
+     *                                                  *
+     ***************************************************/ 
+
+    auto stage_move_to_home =
+        std::make_unique<mtc::stages::MoveTo>("move to home", interpolation_planner);
+    stage_move_to_home->properties().configureInitFrom(mtc::Stage::PARENT, { "group" });
+    stage_move_to_home->setGoal("home");
+    task.add(std::move(stage_move_to_home));   
 
     return task;
     }
