@@ -96,12 +96,13 @@ def my_generate_move_group_launch(ld, moveit_config):
         "publish_robot_description_semantic": True,
         "allow_trajectory_execution": LaunchConfiguration("allow_trajectory_execution"),
         # Note: Wrapping the following values is necessary so that the parameter value can be the empty string
-        "capabilities": ParameterValue(
-            LaunchConfiguration("capabilities"), value_type=str
-        ),
+        #"capabilities": ParameterValue(
+        #    LaunchConfiguration("capabilities"), value_type=str
+        #),
         "disable_capabilities": ParameterValue(
             LaunchConfiguration("disable_capabilities"), value_type=str
         ),
+        "capabilities": "move_group/ExecuteTaskSolutionCapability", # overwrote the default cap, this is needed to launch action server for MTC
         # Publish the planning scene of the physical robot so that rviz plugin can know actual robot
         "publish_planning_scene": should_publish,
         "publish_geometry_updates": should_publish,

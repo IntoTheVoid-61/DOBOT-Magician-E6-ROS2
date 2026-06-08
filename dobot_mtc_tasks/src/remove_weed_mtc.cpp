@@ -155,7 +155,7 @@ namespace remove_weed
     auto cartesian_planner = std::make_shared<mtc::solvers::CartesianPath>();
     cartesian_planner->setMaxVelocityScalingFactor(1.0);
     cartesian_planner->setMaxAccelerationScalingFactor(1.0);
-    cartesian_planner->setStepSize(.05); // desired step size in m
+    cartesian_planner->setStepSize(.03); // desired step size in m => change if cartesian planner does not want to compute solutions
 
     mtc::Stage* current_state_ptr = nullptr;
     mtc::Stage* attach_weed_ptr = nullptr;
