@@ -15,6 +15,8 @@
 #include <moveit/task_constructor/solvers.h>
 #include <moveit/task_constructor/stages.h>
 
+#include "dobot_msgs_fb/srv/approach_object.hpp"
+
 #if __has_include(<tf2_geometry_msgs/tf2_geometry_msgs.hpp>)
 #include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
 #else
@@ -37,6 +39,7 @@ namespace remove_weed
         rclcpp::node_interfaces::NodeBaseInterface::SharedPtr getNodeBaseInterface();
         void doTask();
         void setupPlanningScene();
+        bool getObjectFromService(int object_id); // fetch object pose
 
     private:
         mtc::Task createTask();
@@ -44,12 +47,16 @@ namespace remove_weed
         rclcpp::Node::SharedPtr node_;
         geometry_msgs::msg::PoseStamped object_pose_; // object pose
         geometry_msgs::msg::PoseStamped dumping_pose_; // pose for dumping weed
+        rclcpp::Client<dobot_msgs_fb::srv::ApproachObject>::SharedPtr approach_client_;
+        float height;
+        float radius;
     }; // MTCTaskNode
 
     MTCTaskNode::MTCTaskNode(const rclcpp::NodeOptions& options)
     : node_{std::make_shared<rclcpp::Node>("remove_weed_mtc", options)}
     {
-
+        approach_client_ = 
+            node_->create_client<dobot_msgs_fb::srv::ApproachObject>("/approach_object");
     }
 
     rclcpp::node_interfaces::NodeBaseInterface::SharedPtr MTCTaskNode::getNodeBaseInterface()
@@ -57,27 +64,98 @@ namespace remove_weed
         return node_->get_node_base_interface();
     }
 
+    bool MTCTaskNode::getObjectFromService(int object_id)
+    {
+        if(!approach_client_->wait_for_service(std::chrono::seconds(2))){ // if not responding in 2s
+            RCLCPP_ERROR(node_->get_logger(), "Service not available!");
+            return false;
+        }
+
+        auto request = std::make_shared<dobot_msgs_fb::srv::ApproachObject::Request>();
+        request->object_id = object_id;
+
+        auto future = approach_client_->async_send_request(request);
+
+        if(future.wait_for(std::chrono::seconds(2)) != std::future_status::ready){ // attempting to call service
+            RCLCPP_ERROR(node_->get_logger(), "Failed to call service");
+            return false;
+        }
+
+        auto response = future.get();
+
+        RCLCPP_INFO(node_->get_logger(),
+                    "Got object coordinates: x=%.3f, y=%.3f, z=%.3f, radius=%.3f, height=%.3f",
+                    response->x, response->y, response->z, response->radius, response->height);
+        
+        object_pose_.header.frame_id = "base_link";
+
+        object_pose_.pose.position.x = response->x;
+        object_pose_.pose.position.y = response->y;
+        object_pose_.pose.position.z = response->z;
+
+        object_pose_.pose.orientation.z = 0.0;
+        object_pose_.pose.orientation.w = 1.0;
+
+        radius = response->radius;
+        height = response->height;
+
+        return true;
+
+    }
+
     void MTCTaskNode::setupPlanningScene()
     {
-        // MATIJA: Tukaj bomo najverjetneje klicali service namesto hard coded values
+
+        // creating object
         moveit_msgs::msg::CollisionObject object;
         object.id = "object";
         object.header.frame_id = "base_link";
         object.primitives.resize(1);
         object.primitives[0].type = shape_msgs::msg::SolidPrimitive::CYLINDER;
-        object.primitives[0].dimensions = { 0.1, 0.02 };
 
-        geometry_msgs::msg::Pose pose;
-        pose.position.x = -0.2;
-        pose.position.y = 0.15;
-        pose.position.z = 0.1;
-        pose.orientation.z = 0.0;
-        pose.orientation.w = 1.0; 
-        object.pose = pose;
+
+        // Call service here to dynamically get object cartesian coordinates
+        if(!getObjectFromService(1)){
+            RCLCPP_ERROR(node_->get_logger(), "Using fallback pose!");
+
+            object.primitives[0].dimensions = { 0.1, 0.02 };
+
+            object_pose_.header.frame_id = "base_link";
+
+            object_pose_.pose.position.x = -0.2;
+            object_pose_.pose.position.y = -0.2;
+            object_pose_.pose.position.z = -0.2;
+
+            object_pose_.pose.orientation.z = 0.0;
+            object_pose_.pose.orientation.w = 1.0;
+
+        }
+        else{
+            object.primitives[0].dimensions = { height, radius};
+        }
+
+
+        // creating object
+        //moveit_msgs::msg::CollisionObject object;
+        //object.id = "object";
+        //object.header.frame_id = "base_link";
+        //object.primitives.resize(1);
+        //object.primitives[0].type = shape_msgs::msg::SolidPrimitive::CYLINDER;
+        //object.primitives[0].dimensions = { 0.1, 0.02 };
+
+        //geometry_msgs::msg::Pose pose;
+        //pose.position.x = -0.2;
+        //pose.position.y = 0.15;
+        //pose.position.z = 0.1;
+        //pose.orientation.z = 0.0;
+        //pose.orientation.w = 1.0; 
+
+
+        object.pose = object_pose_.pose; // save to pose to object
 
         // setting up object_pose_ 
-        object_pose_.header.frame_id = object.header.frame_id;
-        object_pose_.pose = object.pose;
+        //object_pose_.header.frame_id = object.header.frame_id;
+        //object_pose_.pose = object.pose;
 
         moveit::planning_interface::PlanningSceneInterface psi;
         psi.applyCollisionObject(object);

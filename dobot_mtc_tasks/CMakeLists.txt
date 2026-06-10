@@ -9,6 +9,7 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(moveit_task_constructor_core REQUIRED)
 find_package(rclcpp REQUIRED)
+find_package(dobot_msgs_fb REQUIRED)
 # uncomment the following section in order to fill in
 # further dependencies manually.
 # find_package(<dependency> REQUIRED)
@@ -37,6 +38,7 @@ ament_target_dependencies(
   remove_weed_mtc
   moveit_task_constructor_core
   rclcpp
+  dobot_msgs_fb
 )
 
 # Install the executable for approach_mtc
