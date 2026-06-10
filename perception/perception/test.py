@@ -97,6 +97,7 @@ class TestDetekcija(Node):
             self.get_logger().info(f"Izbrana naključna rumena detekcija na razdalji {razdalja:.3f}m")
 
         elif request.object_id == 1:
+            #print(f"vse zelene :{self.vse_zelene}")
             if not self.vse_zelene:
                 response.success = False
                 response.message = "Ni zaznane zelene (spargelj)"
