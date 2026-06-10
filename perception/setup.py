@@ -22,7 +22,7 @@ setup(
 
         # config files
         (os.path.join('share',package_name,'config'),
-            glob('perception/config/.yaml')
+            glob('config/*.yaml')
         )
         
     ],
@@ -39,6 +39,9 @@ setup(
     },
     entry_points={
         'console_scripts': [
+            'yolo_pub = perception.publisher_node:main',
+            'test_detekcija=perception.test:main',
+            'test_service_client=perception.test_service_client:main',
         ],
     },
 )
