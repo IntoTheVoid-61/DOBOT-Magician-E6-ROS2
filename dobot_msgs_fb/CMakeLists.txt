@@ -16,6 +16,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "action/MoveToPose.action"
   "action/MoveToHome.action"
   "msg/FrameTransform.msg"
+  "srv/ApproachObject.srv"
   DEPENDENCIES geometry_msgs builtin_interfaces
 )
 
