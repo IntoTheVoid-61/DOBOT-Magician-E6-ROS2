@@ -94,8 +94,10 @@ namespace remove_weed
         object_pose_.pose.position.y = response->y;
         object_pose_.pose.position.z = response->z;
 
+        object_pose_.pose.orientation.x = 0.707;
+        object_pose_.pose.orientation.y = 0.0;
         object_pose_.pose.orientation.z = 0.0;
-        object_pose_.pose.orientation.w = 1.0;
+        object_pose_.pose.orientation.w = 0.707;
 
         radius = response->radius;
         //height = response->height;
