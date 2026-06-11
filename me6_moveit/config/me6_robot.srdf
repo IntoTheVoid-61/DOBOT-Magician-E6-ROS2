@@ -17,12 +17,12 @@
     </group>
     <!--GROUP STATES: Purpose: Define a named state for a particular group, in terms of joint values. This is useful to define states like 'folded arms'-->
     <group_state name="drop" group="me6_group">
-        <joint name="joint1" value="0"/>
-        <joint name="joint2" value="0.5337"/>
-        <joint name="joint3" value="0.7276"/>
-        <joint name="joint4" value="0.3548"/>
-        <joint name="joint5" value="-1.5848"/>
-        <joint name="joint6" value="0"/>
+        <joint name="joint1" value="1.1043"/>
+        <joint name="joint2" value="-0.8368"/>
+        <joint name="joint3" value="-1.3678"/>
+        <joint name="joint4" value="-0.5582"/>
+        <joint name="joint5" value="2.6548"/>
+        <joint name="joint6" value="1.8923"/>
     </group_state>
     <group_state name="home" group="me6_group">
         <joint name="joint1" value="0"/>

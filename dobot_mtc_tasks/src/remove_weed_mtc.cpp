@@ -445,12 +445,21 @@ namespace remove_weed
      *                                                  *
      ***************************************************/ 
 
-    auto stage_move_to_dump = std::make_unique<mtc::stages::Connect>(
-            "move_to_dump",
-            mtc::stages::Connect::GroupPlannerVector{ {arm_group_name, sampling_planner} });
-    stage_move_to_dump->setTimeout(5.0);
-    stage_move_to_dump->properties().configureInitFrom(mtc::Stage::PARENT);
-    task.add(std::move(stage_move_to_dump));    
+    //auto stage_move_to_dump = std::make_unique<mtc::stages::Connect>(
+    //        "move_to_dump",
+    //        mtc::stages::Connect::GroupPlannerVector{ {arm_group_name, sampling_planner} });
+    //stage_move_to_dump->setTimeout(5.0);
+    //stage_move_to_dump->properties().configureInitFrom(mtc::Stage::PARENT);
+    //task.add(std::move(stage_move_to_dump));  
+    
+    /****************************************
+    *           go to dump pose             *
+    ****************************************/ 
+    auto stage_dump = std::make_unique<mtc::stages::MoveTo>("move to dump", sampling_planner);
+    stage_dump->properties().configureInitFrom(mtc::Stage::PARENT, { "group" });
+    stage_dump->setGoal("drop");
+    task.add(std::move(stage_dump)); 
+
 
     /****************************************************
      *                                                  *
@@ -464,26 +473,6 @@ namespace remove_weed
         stage_drop_weed->properties().configureInitFrom(mtc::Stage::PARENT,{ "eef", "group", "ik_frame" });
 
 
-        {
-            auto stage = std::make_unique<mtc::stages::GeneratePlacePose>("generate dumping pose");
-            stage->properties().configureInitFrom(mtc::Stage::PARENT);
-            stage->properties().set("marker_ns", "place_pose");
-            stage->setObject("object");
-            stage->setPose(dumping_pose_);
-
-            stage->setMonitoredStage(attach_weed_ptr);
-
-            auto wrapper =
-                std::make_unique<mtc::stages::ComputeIK>("dump pose IK", std::move(stage));
-            wrapper->setMaxIKSolutions(2);
-            wrapper->setMinSolutionDistance(1.0);
-            wrapper->setIKFrame(hand_frame); // changed
-            wrapper->properties().configureInitFrom(mtc::Stage::PARENT, { "eef", "group" });
-            wrapper->properties().configureInitFrom(mtc::Stage::INTERFACE, { "target_pose" });
-    
-            stage_drop_weed->insert(std::move(wrapper));
-
-        }
 
 
         {
@@ -510,12 +499,17 @@ namespace remove_weed
                                 false);
             stage_drop_weed->insert(std::move(stage));
         }
+
+        {
+
             /****************************************
             *           Detach object               *
             ****************************************/ 
             auto stage = std::make_unique<mtc::stages::ModifyPlanningScene>("detach object");
             stage->detachObject("object", hand_frame);
             stage_drop_weed->insert(std::move(stage));
+
+        }
 
         {
 
