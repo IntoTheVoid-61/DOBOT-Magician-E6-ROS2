@@ -147,7 +147,7 @@ namespace remove_weed
 
             object_pose_.pose.position.x = -0.2;
             object_pose_.pose.position.y = -0.2;
-            object_pose_.pose.position.z = -0.2;
+            object_pose_.pose.position.z = 0.20; // prej -0.2
 
             object_pose_.pose.orientation.z = 0.0;
             object_pose_.pose.orientation.w = 1.0;
