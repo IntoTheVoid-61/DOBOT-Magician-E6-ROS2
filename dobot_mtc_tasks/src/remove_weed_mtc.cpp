@@ -48,6 +48,7 @@ namespace remove_weed
         geometry_msgs::msg::PoseStamped object_pose_; // object pose
         geometry_msgs::msg::PoseStamped dumping_pose_; // pose for dumping weed
         geometry_msgs::msg::PoseStamped ground_plane_pose_; // pose of ground collision plane
+        geometry_msgs::msg::PoseStamped farmbeast_plane_pose_; // pose for farmbeast collision plane
         rclcpp::Client<dobot_msgs_fb::srv::ApproachObject>::SharedPtr approach_client_;
         float height;
         float radius;
@@ -101,7 +102,7 @@ namespace remove_weed
 
         radius = response->radius;
         //height = response->height;
-        height = 0.05; // quick fix
+        height = 0.005; // quick fix, was 0.05
 
         return true;
 
@@ -129,6 +130,28 @@ namespace remove_weed
         ground_plane_pose_.pose.orientation.w = 0.0;
 
         ground_plane.pose = ground_plane_pose_.pose;
+
+        // farmbeast collision plane
+        moveit_msgs::msg::CollisionObject farmbeast_plane;
+        farmbeast_plane.id = "farmbeast_plane";
+        farmbeast_plane.header.frame_id = "world";
+        farmbeast_plane.primitives.resize(1);
+        farmbeast_plane.primitives[0].type = shape_msgs::msg::SolidPrimitive::BOX;
+        farmbeast_plane.primitives[0].dimensions = {1.5,1.5,0.05}; // change this if needed
+
+        farmbeast_plane_pose_.header.frame_id = "world";
+
+        farmbeast_plane_pose_.pose.position.x = 0.0;
+        farmbeast_plane_pose_.pose.position.y = 0.0;
+        farmbeast_plane_pose_.pose.position.z = 0.0;
+
+        farmbeast_plane_pose_.pose.orientation.x = 0.0;
+        farmbeast_plane_pose_.pose.orientation.y = 0.0;
+        farmbeast_plane_pose_.pose.orientation.z = 0.0;
+        farmbeast_plane_pose_.pose.orientation.w = 1.0;
+
+        farmbeast_plane.pose = farmbeast_plane_pose_.pose;
+
 
 
         // creating object
@@ -185,6 +208,7 @@ namespace remove_weed
         moveit::planning_interface::PlanningSceneInterface psi;
         psi.applyCollisionObject(object);
         psi.applyCollisionObject(ground_plane);
+        psi.applyCollisionObject(farmbeast_plane);
 
     }
 
@@ -347,7 +371,7 @@ namespace remove_weed
                                 Eigen::AngleAxisd(0, Eigen::Vector3d::UnitY()) *
                                 Eigen::AngleAxisd(0, Eigen::Vector3d::UnitZ()); 
             grasp_frame_transform.linear() = q.matrix();
-            grasp_frame_transform.translation().z() = 0.05;
+            grasp_frame_transform.translation().z() = 0.0; // changed 0.05 before
 
             auto wrapper =
             std::make_unique<mtc::stages::ComputeIK>("grasp pose IK", std::move(stage));
@@ -406,7 +430,7 @@ namespace remove_weed
             // Set upward direction
             geometry_msgs::msg::Vector3Stamped vec;
             vec.header.frame_id = "world";
-            vec.vector.z = 1.0;
+            vec.vector.y = -1.0;
             stage->setDirection(vec);
             stage_pull_weed->insert(std::move(stage));
         }
@@ -453,7 +477,7 @@ namespace remove_weed
                 std::make_unique<mtc::stages::ComputeIK>("dump pose IK", std::move(stage));
             wrapper->setMaxIKSolutions(2);
             wrapper->setMinSolutionDistance(1.0);
-            wrapper->setIKFrame("object");
+            wrapper->setIKFrame(hand_frame); // changed
             wrapper->properties().configureInitFrom(mtc::Stage::PARENT, { "eef", "group" });
             wrapper->properties().configureInitFrom(mtc::Stage::INTERFACE, { "target_pose" });
     
