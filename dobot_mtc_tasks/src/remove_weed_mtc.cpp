@@ -47,6 +47,7 @@ namespace remove_weed
         rclcpp::Node::SharedPtr node_;
         geometry_msgs::msg::PoseStamped object_pose_; // object pose
         geometry_msgs::msg::PoseStamped dumping_pose_; // pose for dumping weed
+        geometry_msgs::msg::PoseStamped ground_plane_pose_; // pose of ground collision plane
         rclcpp::Client<dobot_msgs_fb::srv::ApproachObject>::SharedPtr approach_client_;
         float height;
         float radius;
@@ -97,7 +98,8 @@ namespace remove_weed
         object_pose_.pose.orientation.w = 1.0;
 
         radius = response->radius;
-        height = response->height;
+        //height = response->height;
+        height = 0.05; // quick fix
 
         return true;
 
@@ -105,6 +107,27 @@ namespace remove_weed
 
     void MTCTaskNode::setupPlanningScene()
     {
+        // ground collision plane
+        moveit_msgs::msg::CollisionObject ground_plane;
+        ground_plane.id = "ground_plane";
+        ground_plane.header.frame_id = "base_link";
+        ground_plane.primitives.resize(1);
+        ground_plane.primitives[0].type = shape_msgs::msg::SolidPrimitive::BOX;
+        ground_plane.primitives[0].dimensions = {0.005,1.5,1.5}; // change this if needed
+
+        ground_plane_pose_.header.frame_id = "base_link";
+
+        ground_plane_pose_.pose.position.x = 0.0;
+        ground_plane_pose_.pose.position.y = 0.23;
+        ground_plane_pose_.pose.position.z = 0.0;
+
+        ground_plane_pose_.pose.orientation.x = 0.7071;
+        ground_plane_pose_.pose.orientation.y = 0.7071;;
+        ground_plane_pose_.pose.orientation.z = 0.0;
+        ground_plane_pose_.pose.orientation.w = 0.0;
+
+        ground_plane.pose = ground_plane_pose_.pose;
+
 
         // creating object
         moveit_msgs::msg::CollisionObject object;
@@ -159,6 +182,7 @@ namespace remove_weed
 
         moveit::planning_interface::PlanningSceneInterface psi;
         psi.applyCollisionObject(object);
+        psi.applyCollisionObject(ground_plane);
 
     }
 
