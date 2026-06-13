@@ -80,14 +80,14 @@ This repository contains all the necessary files used to integrate the Dobot-E6-
  - dobot_system_tests
  - dobot_mtc_tasks
  - farmbeast_utils
+ - gripper_hardware_interface
+ - gripper_system_tests
+ - perception
 
 ---
 ## **TODO FarmBeast specific**
 **Specific functionalities to add and or fix before deployment**
- - Add perception framework and integrate into moveit_task_constructor framework
- - Migrate necessary launch files to dobot_e6_bringup, with ExecuteTaskSolutionCapability and evaluate on real platform (partial completion)
- - Model the final end effector and add it to URDF
- - Add hardware interface for the final end effector 
+ - Currently none
 
 ---
 
@@ -95,8 +95,9 @@ This repository contains all the necessary files used to integrate the Dobot-E6-
 1. Ensure connection is established via ping.
 2. Ensure the robotic arm is in remote TCP mode and enabled. This can be configured via DobotStudio: https://www.scribd.com/document/723793818/DobotStudio-Pro-User-Guide-MG400-M1-Pro-V2-7
 3. This are the recovered files.
+4. When running perception segment: export PYTHONPATH=/home/ziga/miniconda3/envs/ros2_ml/lib/python3.12/site-packages:$PYTHONPATH
 
 ---
 ## Other
-- **Last Updated**: May 11, 2026
+- **Last Updated**: June 13, 2026
 - **More Information**: https://github.com/Dobot-Arm/DOBOT_6Axis_ROS2_V4/tree/main
