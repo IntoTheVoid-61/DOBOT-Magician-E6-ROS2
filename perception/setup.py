@@ -26,7 +26,7 @@ setup(
         )
         
     ],
-    install_requires=['setuptools'],
+    install_requires=['setuptools', 'ultralytics'],
     zip_safe=True,
     maintainer='ziga',
     maintainer_email='ziga.breznikar@student.um.si',
@@ -42,6 +42,7 @@ setup(
             'yolo_pub = perception.publisher_node:main',
             'test_detekcija=perception.test:main',
             'test_service_client=perception.test_service_client:main',
+            'perception_asp=perception.publisher_node_object:main'
         ],
     },
 )

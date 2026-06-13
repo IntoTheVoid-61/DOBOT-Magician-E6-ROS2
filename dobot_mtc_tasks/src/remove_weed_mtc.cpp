@@ -39,7 +39,7 @@ namespace remove_weed
         rclcpp::node_interfaces::NodeBaseInterface::SharedPtr getNodeBaseInterface();
         void doTask();
         void setupPlanningScene();
-        bool getObjectFromService(int object_id); // fetch object pose
+        bool getObjectFromService(int object_id); // fetch object pose => 0: plevel, 1:spargelj
 
     private:
         mtc::Task createTask();
@@ -121,7 +121,7 @@ namespace remove_weed
         ground_plane_pose_.header.frame_id = "base_link";
 
         ground_plane_pose_.pose.position.x = 0.0;
-        ground_plane_pose_.pose.position.y = 0.23;
+        ground_plane_pose_.pose.position.y = 0.20; // change this if needed
         ground_plane_pose_.pose.position.z = 0.0;
 
         ground_plane_pose_.pose.orientation.x = 0.7071;
@@ -163,7 +163,7 @@ namespace remove_weed
 
 
         // Call service here to dynamically get object cartesian coordinates
-        if(!getObjectFromService(1)){
+        if(!getObjectFromService(0)){
             RCLCPP_ERROR(node_->get_logger(), "Using fallback pose!");
 
             object.primitives[0].dimensions = { 0.1, 0.02 };
@@ -371,7 +371,7 @@ namespace remove_weed
                                 Eigen::AngleAxisd(0, Eigen::Vector3d::UnitY()) *
                                 Eigen::AngleAxisd(0, Eigen::Vector3d::UnitZ()); 
             grasp_frame_transform.linear() = q.matrix();
-            grasp_frame_transform.translation().z() = 0.0; // changed 0.05 before
+            grasp_frame_transform.translation().z() = 0.00; // changed 0.05 before, and 0.0
 
             auto wrapper =
             std::make_unique<mtc::stages::ComputeIK>("grasp pose IK", std::move(stage));
