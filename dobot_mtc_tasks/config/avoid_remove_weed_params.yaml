@@ -1,0 +1,39 @@
+avoid_remove_weed_mtc:
+  ros__parameters:
+    collision_planes:
+      ground_plane:
+        id: "ground_plane"
+        frame_id: "base_link"
+        pose:
+          position:
+            x: 0.0
+            y: 0.20
+            z: 0.0
+          orientation:
+            x: 0.7071
+            y: 0.7071
+            z: 0.0
+            w: 0.0
+        dimensions:
+          x: 0.005
+          y: 1.5
+          z: 1.5
+      farmbeast_plane:
+        id: "farmbeast_plane"
+        frame_id: "world"
+        pose:
+          position:
+            x: 0.0
+            y: 0.0
+            z: 0.0
+          orientation:
+            x: 0.0
+            y: 0.0
+            z: 0.0
+            w: 1.0
+        dimensions:
+          x: 1.5
+          y: 1.5
+          z: 0.05
+
+

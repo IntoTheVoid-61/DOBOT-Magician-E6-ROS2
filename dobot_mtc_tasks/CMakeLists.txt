@@ -16,7 +16,7 @@ find_package(dobot_msgs_fb REQUIRED)
 
 # install directories
 install (
-  DIRECTORY launch config
+  DIRECTORY launch config include
   DESTINATION share/${PROJECT_NAME}
 )
 
@@ -25,6 +25,14 @@ add_executable(approach_mtc src/approach_mtc.cpp)
 
 # add approach executable
 add_executable(remove_weed_mtc src/remove_weed_mtc.cpp)
+
+# add executable
+add_executable(avoid_remove_weed_mtc src/avoid_remove_weed_mtc.cpp)
+
+# include directory for avoid_remove_weed_mtc
+target_include_directories(avoid_remove_weed_mtc PUBLIC
+  ${CMAKE_CURRENT_SOURCE_DIR}/include
+)
 
 # specify dependencies for approach_mtc
 ament_target_dependencies(
@@ -41,9 +49,16 @@ ament_target_dependencies(
   dobot_msgs_fb
 )
 
+# specify dependencies for remove_weed_mtc
+ament_target_dependencies(
+  avoid_remove_weed_mtc
+  moveit_task_constructor_core
+  rclcpp
+)
+
 # Install the executable for approach_mtc
 install(TARGETS
-  approach_mtc remove_weed_mtc
+  approach_mtc remove_weed_mtc avoid_remove_weed_mtc
   DESTINATION lib/${PROJECT_NAME}
 )
 
