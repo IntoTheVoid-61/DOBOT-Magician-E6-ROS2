@@ -71,7 +71,8 @@ namespace avoid_remove_weed
 
     bool MTCTaskNode::getSceneFromService() // add later
     {
-      return false;
+    
+      
     }
 
     void MTCTaskNode::setupPlanningScene()
@@ -139,7 +140,7 @@ namespace avoid_remove_weed
       weed_object.primitives[0].type = shape_msgs::msg::SolidPrimitive::CYLINDER;
 
       // defining fallback poses, meant for testing
-      if(!getSceneFromService()){
+      if(!getSceneFromService()){ // if getSceneFromService returns false
         RCLCPP_ERROR(node_->get_logger(), "Call to service failed...using fallback poses!");
 
         // weed_pose_
@@ -225,8 +226,7 @@ namespace avoid_remove_weed
         return;
 
       }
-      else{
-
+      else{ // if getSceneService returns true
 
         return;
       }

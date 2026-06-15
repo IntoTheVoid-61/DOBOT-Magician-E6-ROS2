@@ -42,7 +42,8 @@ setup(
             'yolo_pub = perception.publisher_node:main',
             'test_detekcija=perception.test:main',
             'test_service_client=perception.test_service_client:main',
-            'perception_asp=perception.publisher_node_object:main'
+            'perception_asp=perception.publisher_node_object:main',
+            'perception_avoid=perception.publisher_avoid:main'
         ],
     },
 )
