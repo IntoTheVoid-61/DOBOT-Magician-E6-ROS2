@@ -1,0 +1,12 @@
+# Request
+
+---
+# Response
+bool response 
+string message
+float weed_x
+float weed_y
+float weed_z
+float weed_height
+float weed_radius
+float[][] asparagus

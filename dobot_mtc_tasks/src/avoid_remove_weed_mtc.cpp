@@ -392,7 +392,7 @@ namespace avoid_remove_weed
 
           {
               /****************************************
-              *           Allow Collision             * To res lahka gor fuknes, assuma da se v approach stage-u ne pride v kolizijo
+              *       Allow Collision hand-weed       * To res lahka gor fuknes, assuma da se v approach stage-u ne pride v kolizijo
               ****************************************/ 
 
               auto stage =
@@ -403,6 +403,22 @@ namespace avoid_remove_weed
                                           ->getLinkModelNamesWithCollisionGeometry(),
                                       true);
               stage_pull_weed->insert(std::move(stage));
+
+          }
+
+          {
+            /****************************************
+            *   Allow Collision gripper-ground      *
+            ****************************************/
+            auto stage = 
+                std::make_unique<mtc::stages::ModifyPlanningScene>("allow collision (gripper, ground)");
+                stage->allowCollisions(node_->get_parameter("collision_planes.ground_plane.id").as_string(),
+                                                          task.getRobotModel()
+                                                            //->getJointModelGroup(hand_group_name) // disabled since it reports collision (it should not)
+                                                            ->getLinkModelNamesWithCollisionGeometry(),
+                                                          true);
+            stage_pull_weed->insert(std::move(stage));
+
 
           }
 

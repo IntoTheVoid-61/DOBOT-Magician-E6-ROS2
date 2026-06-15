@@ -34,6 +34,6 @@ avoid_remove_weed_mtc:
         dimensions:
           x: 1.5
           y: 1.5
-          z: 0.05
+          z: 0.005
 
 
