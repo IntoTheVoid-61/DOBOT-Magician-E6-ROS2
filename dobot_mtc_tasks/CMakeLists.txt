@@ -54,6 +54,7 @@ ament_target_dependencies(
   avoid_remove_weed_mtc
   moveit_task_constructor_core
   rclcpp
+  dobot_msgs_fb
 )
 
 # Install the executable for approach_mtc

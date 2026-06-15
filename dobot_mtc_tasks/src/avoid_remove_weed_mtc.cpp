@@ -19,6 +19,7 @@ avoidance of asparagus.
 #include <vector>
 
 #include "asparagus.hpp"
+#include "dobot_msgs_fb/srv/remove_weed.hpp"
 
 
 #if __has_include(<tf2_geometry_msgs/tf2_geometry_msgs.hpp>)
@@ -54,14 +55,15 @@ namespace avoid_remove_weed
         std::vector<Asparagus> asparagus_; // mnozina -> when calling service we create asparagus_ objects in a vector
         geometry_msgs::msg::PoseStamped ground_plane_pose_;
         geometry_msgs::msg::PoseStamped farmbeast_plane_pose_; 
-        // add client object here
+        rclcpp::Client<dobot_msgs_fb::srv::RemoveWeed>::SharedPtr service_client_;
     }; // MTCTaskNode
 
 
     MTCTaskNode::MTCTaskNode(const rclcpp::NodeOptions& options)
     : node_{std::make_shared<rclcpp::Node>("avoid_remove_weed_mtc", options)}
     {
-      // initialize client here
+      service_client_ = 
+        node_->create_client<dobot_msgs_fb::srv::RemoveWeed>("/remove_weed");
     }
 
     rclcpp::node_interfaces::NodeBaseInterface::SharedPtr MTCTaskNode::getNodeBaseInterface()
@@ -71,7 +73,55 @@ namespace avoid_remove_weed
 
     bool MTCTaskNode::getSceneFromService() // add later
     {
+    if(!service_client_->wait_for_service(std::chrono::seconds(2))){
+        RCLCPP_ERROR(node_->get_logger(), "Service not available");
+        return false;
+    }
+
+    auto request = std::make_shared<dobot_msgs_fb::srv::RemoveWeed::Request>(); // create empty request, and send it
+    auto future = service_client_->async_send_request(request); // send empty request
+
+    if(future.wait_for(std::chrono::seconds(2)) != std::future_status::ready){
+        RCLCPP_ERROR(node_->get_logger(), "Failed to call service");
+        return false;
+    }
+
+    auto response = future.get();
+
+    if(!response->response){ // if response == false
+        RCLCPP_ERROR(node_->get_logger(), "Did not detect weeds");
+        return false;
+    }
+
+    // defining weed_pose_ attribute
+    weed_pose_.header.frame_id = "base_link";
+
+    weed_pose_.pose.position.x = response->weed_x;
+    weed_pose_.pose.position.y = response->weed_y;
+    weed_pose_.pose.position.z = response->weed_z;
+
+    weed_pose_.pose.orientation.x = 0.707;
+    weed_pose_.pose.orientation.w = 0.707;
+
+    // creating Asparagus objects
+    auto asparagus_flat = response->asparagus;
     
+    // filling asparagus_ vector
+    for (size_t i = 0; i < asparagus_flat.size(); i += 5){
+
+        geometry_msgs::msg::PoseStamped asparagus_pose;
+
+        asparagus_pose.pose.position.x = asparagus_flat[i];
+        asparagus_pose.pose.position.y = asparagus_flat[i+1];
+        asparagus_pose.pose.position.z = asparagus_flat[i+2];
+
+        auto asparagus_height = asparagus_flat[i+3];
+        auto asparagus_radius = asparagus_flat[i+4];
+
+        asparagus_.push_back(Asparagus(asparagus_pose, asparagus_height, asparagus_radius));
+    }
+
+    return true;
       
     }
 
@@ -227,6 +277,33 @@ namespace avoid_remove_weed
 
       }
       else{ // if getSceneService returns true
+
+        // weed_object
+        weed_object.primitives[0].dimensions = { 0.005, 0.02 };
+        weed_object.pose = weed_pose_.pose;
+
+        // asparagus_objects
+        moveit_msgs::msg::CollisionObject asparagus_objects; // creates one object
+        asparagus_objects.id = "asparagus_objects";
+        asparagus_objects.header.frame_id = "base_link";
+        asparagus_objects.primitives.resize(asparagus_.size()); // n asparagus
+        asparagus_objects.primitive_poses.resize(asparagus_.size());
+
+        // defining asparagus objects
+        for(int i=0; i < asparagus_.size(); i++){
+          asparagus_objects.primitives[i].type = shape_msgs::msg::SolidPrimitive::CYLINDER;
+          asparagus_objects.primitives[i].dimensions = {asparagus_[i].getHeight(),asparagus_[i].getRadius()};
+          auto pose_temp = asparagus_[i].getPose();
+          pose_temp.pose.orientation.x = 0.707;
+          pose_temp.pose.orientation.w = 0.707;
+          asparagus_objects.primitive_poses[i] = pose_temp.pose; // single object
+        }
+
+        moveit::planning_interface::PlanningSceneInterface psi;
+        psi.applyCollisionObject(ground_plane);
+        psi.applyCollisionObject(farmbeast_plane);
+        psi.applyCollisionObject(weed_object);
+        psi.applyCollisionObject(asparagus_objects);
 
         return;
       }
