@@ -17,6 +17,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "action/MoveToHome.action"
   "msg/FrameTransform.msg"
   "srv/ApproachObject.srv"
+  "srv/RemoveWeed.srv"
   DEPENDENCIES geometry_msgs builtin_interfaces
 )
 

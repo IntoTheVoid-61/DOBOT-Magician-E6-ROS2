@@ -4,9 +4,9 @@
 # Response
 bool response 
 string message
-float weed_x
-float weed_y
-float weed_z
-float weed_height
-float weed_radius
-float[][] asparagus
+float64 weed_x
+float64 weed_y
+float64 weed_z
+float64 weed_height
+float64 weed_radius
+float64[] asparagus # [x1,y1,z1,h1,r1,x2,...,xn,yn,zn,rn,hn]
