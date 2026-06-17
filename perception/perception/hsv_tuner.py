@@ -6,7 +6,7 @@ def nothing(x):
     pass
 
 
-cap = cv2.VideoCapture(4)  # RealSense RGB - probaj 0,2,4 če ne dela
+cap = cv2.VideoCapture(6)  # RealSense RGB - probaj 0,2,4 če ne dela
 
 cv2.namedWindow("HSV Tuner")
 cv2.createTrackbar("H min", "HSV Tuner", 0, 255, nothing)

@@ -73,7 +73,7 @@ namespace avoid_remove_weed
 
     bool MTCTaskNode::getSceneFromService() // add later
     {
-    if(!service_client_->wait_for_service(std::chrono::seconds(2))){
+    if(!service_client_->wait_for_service(std::chrono::seconds(5))){
         RCLCPP_ERROR(node_->get_logger(), "Service not available");
         return false;
     }
