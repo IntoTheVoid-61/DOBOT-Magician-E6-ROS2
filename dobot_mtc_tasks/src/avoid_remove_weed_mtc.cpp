@@ -112,7 +112,7 @@ namespace avoid_remove_weed
         geometry_msgs::msg::PoseStamped asparagus_pose;
 
         asparagus_pose.pose.position.x = asparagus_flat[i];
-        asparagus_pose.pose.position.y = asparagus_flat[i+1];
+        asparagus_pose.pose.position.y = asparagus_flat[i+1] - 0.1; // height/2
         asparagus_pose.pose.position.z = asparagus_flat[i+2];
 
         auto asparagus_height = asparagus_flat[i+3];
@@ -454,7 +454,7 @@ namespace avoid_remove_weed
                                   Eigen::AngleAxisd(0, Eigen::Vector3d::UnitY()) *
                                   Eigen::AngleAxisd(0, Eigen::Vector3d::UnitZ()); 
               grasp_frame_transform.linear() = q.matrix();
-              grasp_frame_transform.translation().z() = 0.00; // changed 0.05 before, and 0.0
+              grasp_frame_transform.translation().z() = -0.010; // changed 0.05 before, and 0.0
 
               auto wrapper =
               std::make_unique<mtc::stages::ComputeIK>("grasp pose IK", std::move(stage));

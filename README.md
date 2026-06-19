@@ -1,5 +1,7 @@
 # **Description**
-This repository contains all the necessary files used to integrate the Dobot-E6-Magician with the FarmBeast - an AMR agriculture platform being actively developed at University of Maribor.
+Application allows for safe, perception based weeds removal while avoiding asparagus. The framework is based on YOLO for perception and MoveIt Task Constructor for object avoidance path planning. The goal is to detect weeds and subsequently mechanically remove them without damaging the crop.
+
+Framework was awarded the first place at the **Field Robot Event 2026** event in freestyle category. It is part of the FarmBeast project - an AMR agriculture platform being actively developed at University of Maribor.
 
 ---
 
@@ -16,13 +18,11 @@ This repository contains all the necessary files used to integrate the Dobot-E6-
 ---
 
 ## **Configuration steps**
-1. **Create work space and set environmental variables**
+1. **Create workspace**
    ```bash
    mkdir -p ~/ros2_ws/src
    cd ~/ros2_ws
    colcon build
-   echo "source ~/ros2_ws/install/local_setup.sh" >> ~/.bashrc
-   echo "alias cb='cd ~/ros2_ws && colcon build && source ~/.bashrc'" >> ~/.bashrc
    ```
 
 2. **Configure robot specific variables**
@@ -35,43 +35,16 @@ This repository contains all the necessary files used to integrate the Dobot-E6-
     ```bash
     cd ~/ros2_ws/src
     git clone https://github.com/IntoTheVoid-61/DOBOT-Magician-E6-ROS2
+    vcs import < DOBOT-Magician-E6-ROS2/upstream.repos
     cd ~/ros2_ws
     rosdep install --from-paths src --ignore-src -r -y
-    cb #Build alias, set in the first step
+    colcon build
     ```
 
 ---
 
-## **Features**
-1. **Robot visualization**
-    ```bash
-    ros2 launch dobot_e6_bringup robot_state_publisher.launch.py
-    ```
-2. **Basic ROS 2 control**
-    ```bash
-    ros2 launch dobot_e6_bringup ros2_control.py
-    ```
-3. **MoveIt Virtual Demo**
-    ```bash
-    ros2 launch dobot_moveit moveit_demo.launch.py
-    ```
-
-4. **Moveit Robot Control**
-    - Terminal 1 (Connect the Robotic Arm)
-    ```bash
-    ros2 launch cr_robot_ros2 dobot_bringup_ros2.launch.py
-    ```
-    - Terminal 2 (Launch MoveIt)
-    ```bash
-    ros2 launch dobot_moveit dobot_moveit.launch.py
-    ```
-
-5. **Framework Launch**
-    - To launch the ROS2 framework in its entirety, run the command: (inside the respected folder)
-    ```bash
-    /.start_dobot.sh
-    ```
-
+## **Framework Launch**
+     ~/ros2_ws/src/DOBOT-Magician-E6-ROS2/dobot_e6_bringup/scripts/start_framework.sh
 
 ---
 ## **FarmBeast specific**
@@ -84,20 +57,13 @@ This repository contains all the necessary files used to integrate the Dobot-E6-
  - gripper_system_tests
  - perception
 
----
-## **TODO FarmBeast specific**
-**Specific functionalities to add and or fix before deployment**
- - Currently none
-
----
 
 ## Notes
 1. Ensure connection is established via ping.
 2. Ensure the robotic arm is in remote TCP mode and enabled. This can be configured via DobotStudio: https://www.scribd.com/document/723793818/DobotStudio-Pro-User-Guide-MG400-M1-Pro-V2-7
-3. This are the recovered files.
-4. When running perception segment: export PYTHONPATH=/home/ziga/miniconda3/envs/ros2_ml/lib/python3.12/site-packages:$PYTHONPATH
+3. When running perception segment make sure ultralytics is available.
 
 ---
 ## Other
-- **Last Updated**: June 13, 2026
+- **Last Updated**: June 19, 2026
 - **More Information**: https://github.com/Dobot-Arm/DOBOT_6Axis_ROS2_V4/tree/main

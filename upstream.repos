@@ -1,0 +1,10 @@
+# Upstream dependencies
+repositories:
+  realsense-ros:
+    type: git
+    url: https://github.com/realsenseai/realsense-ros.git
+    version: ros2-master
+  moveit2:
+    type: git
+    url: https://github.com/moveit/moveit2.git
+    version: main

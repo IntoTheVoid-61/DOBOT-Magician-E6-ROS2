@@ -2,7 +2,7 @@
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
   <name>dobot_e6</name>
-  <version>0.0.1</version>
+  <version>1.0.0</version>
   <description>Metapackage for dobot magician e6</description>
   <maintainer email="ziga.breznikar@student.um.si">ziga_jazzy</maintainer>
   <license>TODO: License declaration</license>
@@ -20,9 +20,12 @@
   <exec_depend>dobot_msgs_v4</exec_depend>
   <exec_depend>dobot_mtc_tasks</exec_depend>
   <exec_depend>dobot_system_tests</exec_depend>
+  <exec_depend>farmbeast_bringup</exec_depend>
   <exec_depend>farmbeast_utils</exec_depend>
   <exec_depend>gripper_hardware_interface</exec_depend>
+  <exec_depend>gripper_system_tests</exec_depend>
   <exec_depend>me6_moveit</exec_depend>
+  <exec_depend>perception</exec_depend>
 
 
   <export>

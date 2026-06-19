@@ -25,8 +25,8 @@ class YoloImagePublisher(Node):
             self.get_parameter("debug_param").get_parameter_value()._bool_value
         )
         # HSV parametri za zeleno
-        self.declare_parameter("lower_green", [0, 28, 0]) # H-min, S-min, V_min
-        self.declare_parameter("upper_green", [95, 255, 237]) # H_max S_max V_max
+        self.declare_parameter("lower_green", [24, 11, 67]) # H-min, S-min, V_min
+        self.declare_parameter("upper_green", [81, 141, 200]) # H_max S_max V_max
 
         lower = (
             self.get_parameter("lower_green").get_parameter_value().integer_array_value
@@ -45,7 +45,7 @@ class YoloImagePublisher(Node):
         self.model = YOLO(model_path)
 
         self.min_weed_area = 2500
-        self.max_weed_area = 15000
+        self.max_weed_area = 10000
 
         # radij pobiranja
         self.min_radius = 0.3
@@ -116,7 +116,7 @@ class YoloImagePublisher(Node):
             response.weed_x = float(wx)
             response.weed_y = float(wy)
             response.weed_z = float(wz)
-            response.weed_height = 0.005
+            response.weed_height = 0.025
             response.weed_radius = 0.02
 
             asparagus_flat = [] # flattened list
@@ -205,10 +205,10 @@ class YoloImagePublisher(Node):
             for (x, y, z) in self.all_weeds
             if self.min_radius <= np.sqrt(x**2 + y**2 + z**2) <= self.max_radius
         )
-        self.get_logger().info(
-            f"rumene: {len(self.all_weeds)} (v radiju [{self.min_radius}-{self.max_radius}m]: {plevel_v_radiju}) | "
-            f"zelene: {len(self.all_asparagous)} (v radiju: {spargljji_v_radiju})"
-        )
+        #self.get_logger().info(
+        #    f"rumene: {len(self.all_weeds)} (v radiju [{self.min_radius}-{self.max_radius}m]: {plevel_v_radiju}) | "
+        #    f"zelene: {len(self.all_asparagous)} (v radiju: {spargljji_v_radiju})"
+        #)
 
         annotated_img = self.draw_results(img, results, weed_locations)
 
