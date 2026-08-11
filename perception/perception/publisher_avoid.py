@@ -25,8 +25,8 @@ class YoloImagePublisher(Node):
             self.get_parameter("debug_param").get_parameter_value()._bool_value
         )
         # HSV parametri za zeleno
-        self.declare_parameter("lower_green", [24, 11, 67]) # H-min, S-min, V_min
-        self.declare_parameter("upper_green", [81, 141, 200]) # H_max S_max V_max
+        self.declare_parameter("lower_green", [16, 34, 95]) # H-min, S-min, V_min
+        self.declare_parameter("upper_green", [105, 213, 200]) # H_max S_max V_max
 
         lower = (
             self.get_parameter("lower_green").get_parameter_value().integer_array_value
