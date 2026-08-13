@@ -35,6 +35,10 @@ add_executable(move_to_home_action_server
 add_executable(move_to_home_action_client
   src/move_to_home_action_client.cpp)
 
+# add move_loop executable
+add_executable(move_loop
+  src/move_loop.cpp)
+
 # specify dependencies for move_to_pose_action_server
 ament_target_dependencies(move_to_pose_action_server
   rclcpp
@@ -67,6 +71,14 @@ ament_target_dependencies(move_to_home_action_client
   geometry_msgs
 )
 
+ament_target_dependencies(move_loop
+  rclcpp
+  rclcpp_action
+  moveit_msgs
+  moveit_ros_planning_interface
+  geometry_msgs
+)
+
 
 # Install the executables move_to_pose_action_server
 install(TARGETS
@@ -89,6 +101,12 @@ install(TARGETS
 # Install the executables move_to_pose_action_client
 install(TARGETS
   move_to_home_action_client
+  DESTINATION lib/${PROJECT_NAME}
+)
+
+# Install the executables move_to_pose_action_client
+install(TARGETS
+  move_loop
   DESTINATION lib/${PROJECT_NAME}
 )
 

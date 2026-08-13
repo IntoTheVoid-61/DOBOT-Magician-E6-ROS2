@@ -30,7 +30,7 @@ def generate_launch_description():
 
     # Load  ExecuteTaskSolutionCapability so we can execute found solutions in simulation
     move_group_capabilities = {
-        "capabilities": "move_group/ExecuteTaskSolutionCapability"
+        "capabilities": "move_group/ExecuteTaskSolutionCapability pilz_industrial_motion_planner/MoveGroupSequenceAction" 
     }
 
     # Start the actual move_group node/action server
