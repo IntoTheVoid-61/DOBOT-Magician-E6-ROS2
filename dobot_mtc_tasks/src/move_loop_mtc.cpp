@@ -39,10 +39,11 @@ namespace move_loop
         public:
             MTCTaskNode(const rclcpp::NodeOptions& options);
             rclcpp::node_interfaces::NodeBaseInterface::SharedPtr getNodeBaseInterface();
-            bool setupPlanningScene();
+            //bool setupPlanningScene();
             void loopTask();
             void doTaskOnce();
         private:
+            bool setupPlanningScene();
             bool doTask();
             mtc::Task createTask();
             bool getPoses(); // this can be replaced with service for perception
@@ -61,7 +62,9 @@ namespace move_loop
     {
         return node_->get_node_base_interface();
     }
-
+    /*
+    @brief Function reads the poses from yaml file and saves them into goal_poses_
+    */
     bool MTCTaskNode::getPoses()
     {
         num_of_weeds_ = static_cast<unsigned short>(
@@ -69,7 +72,6 @@ namespace move_loop
         );
 
         goal_poses_.clear();
-        //goal_poses_.resize(num_of_weeds_);
 
         for(unsigned short i = 0; i < num_of_weeds_; i++){
             std::stringstream ss;
@@ -99,8 +101,6 @@ namespace move_loop
             pose.pose.position.z = pose_array[2];
 
             pose.pose.orientation.x = 0.707;
-            //pose.pose.orientation.y = pose_array[4];
-            //pose.pose.orientation.z = pose_array[5];
             pose.pose.orientation.w = 0.707;
 
             goal_poses_.push_back(pose);
@@ -111,7 +111,9 @@ namespace move_loop
         return true;
 
     }
-
+    /*
+    @brief Function is responsible for setting up initial Planning Scene
+    */
     bool MTCTaskNode::setupPlanningScene()
     {
         if(!getPoses()){
@@ -121,18 +123,9 @@ namespace move_loop
 
         moveit::planning_interface::PlanningSceneInterface psi;
 
-        // add try catch for debugging purposes
-
-        // create weed_objects CollisionObject vector
         std::vector<moveit_msgs::msg::CollisionObject> weed_objects;
         weed_objects.clear();
         weed_objects.resize(num_of_weeds_);
-
-        //moveit_msgs::msg::CollisionObject weed_objects;
-        //weed_objects.id = "weed_objects";
-        //weed_objects.header.frame_id = "base_link";
-        //weed_objects.primitives.resize(num_of_weeds_);
-        //weed_objects.primitive_poses.resize(num_of_weeds_);
 
         float height = 0.005;
         float width = 0.02;
@@ -159,18 +152,14 @@ namespace move_loop
 
             psi.applyCollisionObject(weed_objects[i]);
 
-            //weed_objects.primitives[i].type = shape_msgs::msg::SolidPrimitive::CYLINDER;
-            //weed_objects.primitives[i].dimensions = {height,width};
-            //weed_objects.primitives_poses[i] = goal_poses_[i].pose;
         }
-
-
-        //psi.applyCollisionObject(weed_objects);
 
         return true;
 
     }
-
+    /*
+    @brief Function is responsible for creating the task
+    */
     mtc::Task MTCTaskNode::createTask()
     {
         mtc::Task task;
@@ -195,32 +184,17 @@ namespace move_loop
 
         mtc::Stage* current_state_ptr = nullptr;
 
-        // log links
-        const auto link_names =
-            task.getRobotModel()->getLinkModelNamesWithCollisionGeometry();
-
-        for(const auto& link_name : link_names){
-            RCLCPP_INFO(
-                node_->get_logger(),
-                "Collision link: %s",
-                link_name.c_str());
-        }
-
-
         /****************************************************
         *                                                   *
         *                   Current State                   *
         *                                                   *
         ****************************************************/
 
-        //std::stringstream ss;
-        //ss << "current_" << i;
-        //std::string s = ss.str();
-
         auto stage_state_current = std::make_unique<mtc::stages::CurrentState>("current_state");
         current_state_ptr = stage_state_current.get();
         task.add(std::move(stage_state_current));
 
+        /***********************Main Loop*****************************/
         for(unsigned short i = 0; i < num_of_weeds_; i++){
             std::string weed_id = "weed_" + std::to_string(i);
             
@@ -232,10 +206,8 @@ namespace move_loop
             ****************************************************/
 
             std::stringstream ss;
-            //ss.str(""); // empty it
             ss << "move_to_weed_" << i;
             std::string s = ss.str();
-            //s = ss.str();
 
             auto stage_move_to_weed = std::make_unique<mtc::stages::Connect>(
                 s,
@@ -307,7 +279,7 @@ namespace move_loop
                     stage->properties().configureInitFrom(mtc::Stage::PARENT);
                     stage->properties().set("marker_ns", "grasp_pose");
                     stage->setPreGraspPose("open");
-                    stage->setObject(weed_id); // does this work if weed_objects is a vector?
+                    stage->setObject(weed_id);
                     stage->setAngleDelta(M_PI / 12);
                     stage->setMonitoredStage(current_state_ptr);
 
@@ -331,24 +303,6 @@ namespace move_loop
 
                 {
                     /****************************************
-                    *           Forbid collision            *
-                    ****************************************/ 
-                   
-                    /*
-                    auto stage =
-                        std::make_unique<mtc::stages::ModifyPlanningScene>("forbid collision (hand,object)");
-                    stage->allowCollisions(weed_id, // again how does this work with vector
-                                        task.getRobotModel()
-                                            ->getJointModelGroup(hand_group_name)
-                                            ->getLinkModelNamesWithCollisionGeometry(),
-                                        false);
-                    stage_pull_weed->insert(std::move(stage));
-                    */
-                    
-                }
-
-                {
-                    /****************************************
                     *              Close gripper            *
                     ****************************************/  
                     auto stage =
@@ -363,7 +317,7 @@ namespace move_loop
                      *           Attach weed                 *
                      ****************************************/ 
                     auto stage = std::make_unique<mtc::stages::ModifyPlanningScene>("attach weed");
-                    stage->attachObject(weed_id, hand_frame); // again how does this work with vector weed_objects
+                    stage->attachObject(weed_id, hand_frame);
                     stage_pull_weed->insert(std::move(stage));
 
                 }
@@ -395,7 +349,6 @@ namespace move_loop
             ****************************************************/ 
 
             ss.str("");
-            //std::stringstream ss;
             ss << "move_to_dump_" << i;
             s = ss.str();
 
@@ -437,7 +390,7 @@ namespace move_loop
                     
                     auto stage =
                         std::make_unique<mtc::stages::ModifyPlanningScene>("forbid collision (hand,object)");
-                    stage->allowCollisions(weed_id, // again how does this work with vector
+                    stage->allowCollisions(weed_id,
                                         task.getRobotModel()
                                             ->getJointModelGroup(hand_group_name)
                                             ->getLinkModelNamesWithCollisionGeometry(),
@@ -454,7 +407,7 @@ namespace move_loop
                     *           Detach object               *
                     ****************************************/ 
                     auto stage = std::make_unique<mtc::stages::ModifyPlanningScene>("detach object");
-                    stage->detachObject(weed_id, hand_frame); // again how does this work with vector
+                    stage->detachObject(weed_id, hand_frame);
                     stage_drop_weed->insert(std::move(stage));
 
                 }
@@ -502,7 +455,6 @@ namespace move_loop
             ****************************************************/
             
             ss.str("");
-            //std::stringstream ss;
             ss << "move_to_home_" << i;
             s = ss.str();
 
@@ -519,6 +471,9 @@ namespace move_loop
 
     }
 
+    /*
+    @brief Plans and executes task
+    */
     bool MTCTaskNode::doTask()
     {
         try
@@ -547,7 +502,7 @@ namespace move_loop
         task_.introspection().publishSolution(*task_.solutions().front()); // visualize
         RCLCPP_INFO(node_->get_logger(), "Executing task");
 
-        //execute, blocks...
+        //execute... this is a blocking function
         auto results = task_.execute(*task_.solutions().front());
 
         if (results.val != moveit_msgs::msg::MoveItErrorCodes::SUCCESS){
@@ -564,7 +519,9 @@ namespace move_loop
         return true;
         
     }
-
+    /*
+    @brief Main method, executes generated solution in a loop
+    */
     void MTCTaskNode::loopTask()
     {
 
@@ -614,7 +571,9 @@ namespace move_loop
         }
         
     }
-
+    /*
+    @brief Executes task once -> for debugging purposes
+    */
     void MTCTaskNode::doTaskOnce()
     {
         if(!setupPlanningScene()){
@@ -673,9 +632,8 @@ int main(int argc, char** argv)
   });
 
   // call mtc_task_node related functions here
-  //mtc_task_node->setupPlanningScene();
-  //mtc_task_node->loopTask();
-  mtc_task_node->doTaskOnce();
+  mtc_task_node->loopTask();
+  //mtc_task_node->doTaskOnce();
 
   spin_thread->join();
   rclcpp::shutdown();

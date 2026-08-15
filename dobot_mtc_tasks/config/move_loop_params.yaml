@@ -1,8 +1,8 @@
 move_loop_mtc:
   ros__parameters:
-    num_of_poses: 2
+    num_of_poses: 3
     poses:
-      #pose_0: [-0.234,0.19,0.599] # position only, orientation is fixed
-      pose_0: [-0.234,0.19,0.499]
-      pose_1: [-0.234,0.19,0.300]
+      pose_0: [-0.234,0.19,0.500] # position only, orientation is fixed
+      pose_1: [-0.234,0.19,0.400]
+      pose_2: [-0.234,0.19,0.300]
       #pose_3: [-0.234,0.19,0.599]

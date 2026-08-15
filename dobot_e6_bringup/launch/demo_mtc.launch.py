@@ -46,7 +46,7 @@ def generate_launch_description():
 
     # RViz
     rviz_config_file = (
-        get_package_share_directory("me6_moveit") + "/config/moveit.rviz"
+        get_package_share_directory("me6_moveit") + "/config/move_loop.rviz"
     )
     rviz_node = Node(
         package="rviz2",
