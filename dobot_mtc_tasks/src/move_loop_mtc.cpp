@@ -69,7 +69,7 @@ namespace move_loop
         );
 
         goal_poses_.clear();
-        goal_poses_.resize(num_of_weeds_);
+        //goal_poses_.resize(num_of_weeds_);
 
         for(unsigned short i = 0; i < num_of_weeds_; i++){
             std::stringstream ss;
@@ -78,7 +78,15 @@ namespace move_loop
 
             std::vector<double> pose_array = node_->get_parameter(s).as_double_array();
 
-            if(pose_array.size() != 7){
+            std::ostringstream oss;
+            for (size_t i = 0; i < pose_array.size(); ++i) {
+                if (i > 0) oss << ", ";
+                oss << pose_array[i];
+            }
+
+            RCLCPP_INFO(node_->get_logger(), "pose_array: [%s]", oss.str().c_str());
+
+            if(pose_array.size() != 3){
                 RCLCPP_ERROR(node_->get_logger(), "Invalid pose size");
                 return false;
             }
@@ -90,10 +98,10 @@ namespace move_loop
             pose.pose.position.y = pose_array[1];
             pose.pose.position.z = pose_array[2];
 
-            pose.pose.orientation.x = pose_array[3];
-            pose.pose.orientation.y = pose_array[4];
-            pose.pose.orientation.z = pose_array[5];
-            pose.pose.orientation.w = pose_array[6];
+            pose.pose.orientation.x = 0.707;
+            //pose.pose.orientation.y = pose_array[4];
+            //pose.pose.orientation.z = pose_array[5];
+            pose.pose.orientation.w = 0.707;
 
             goal_poses_.push_back(pose);
 
@@ -138,6 +146,17 @@ namespace move_loop
             weed_objects[i].primitives[0].dimensions = {height,width};
             weed_objects[i].pose = goal_poses_[i].pose;
 
+            RCLCPP_INFO(
+                node_->get_logger(),
+                "weed_%d position: x=%.3f, y=%.3f, z=%.3f, orientation_x=%.3f, orientation_w=%.3f",
+                i,
+                weed_objects[i].pose.position.x,
+                weed_objects[i].pose.position.y,
+                weed_objects[i].pose.position.z,
+                weed_objects[i].pose.orientation.x,
+                weed_objects[i].pose.orientation.w
+            );
+
             psi.applyCollisionObject(weed_objects[i]);
 
             //weed_objects.primitives[i].type = shape_msgs::msg::SolidPrimitive::CYLINDER;
@@ -176,6 +195,18 @@ namespace move_loop
 
         mtc::Stage* current_state_ptr = nullptr;
 
+        // log links
+        const auto link_names =
+            task.getRobotModel()->getLinkModelNamesWithCollisionGeometry();
+
+        for(const auto& link_name : link_names){
+            RCLCPP_INFO(
+                node_->get_logger(),
+                "Collision link: %s",
+                link_name.c_str());
+        }
+
+
         /****************************************************
         *                                                   *
         *                   Current State                   *
@@ -191,22 +222,6 @@ namespace move_loop
         task.add(std::move(stage_state_current));
 
         for(unsigned short i = 0; i < num_of_weeds_; i++){
-            //std::string weed_id = "weed_" + std::to_string(i);
-
-            /****************************************************
-            *                                                   *
-            *                   Current State                   *
-            *                                                   *
-            ****************************************************/
-
-            //std::stringstream ss;
-            //ss << "current_" << i;
-            //std::string s = ss.str();
-
-            //auto stage_state_current = std::make_unique<mtc::stages::CurrentState>(s);
-            //current_state_ptr = stage_state_current.get();
-            //task.add(std::move(stage_state_current));
-
             std::string weed_id = "weed_" + std::to_string(i);
             
 
@@ -225,7 +240,7 @@ namespace move_loop
             auto stage_move_to_weed = std::make_unique<mtc::stages::Connect>(
                 s,
                 mtc::stages::Connect::GroupPlannerVector{ {arm_group_name, sampling_planner} });
-            stage_move_to_weed->setTimeout(5.0);
+            stage_move_to_weed->setTimeout(30.0);
             stage_move_to_weed->properties().configureInitFrom(mtc::Stage::PARENT);
             task.add(std::move(stage_move_to_weed));
 
@@ -246,22 +261,6 @@ namespace move_loop
 
                 {
                     /****************************************
-                    *        Allow collision hand-weed      *
-                    ****************************************/ 
-
-                    auto stage =
-                        std::make_unique<mtc::stages::ModifyPlanningScene>("allow collision (hand, weed)");
-                    stage->allowCollisions(
-                        weed_id,
-                        task.getRobotModel()->getLinkModelNamesWithCollisionGeometry(),
-                        true);
-                    
-                    stage_pull_weed->insert(std::move(stage));
-
-                }
-
-                {
-                    /****************************************
                     *             Move relative             *
                     ****************************************/
 
@@ -277,6 +276,24 @@ namespace move_loop
                     vec.header.frame_id = hand_frame; // move w.r.t. dummy_tcp
                     vec.vector.z = 1.0; // move into positive z direction
                     stage->setDirection(vec);
+                    stage_pull_weed->insert(std::move(stage));
+
+                }
+
+                {
+                    /****************************************
+                    *        Allow collision hand-weed      *
+                    ****************************************/
+
+                    auto stage =
+                        std::make_unique<mtc::stages::ModifyPlanningScene>("allow collision (hand, weed)");
+                    stage->allowCollisions(
+                        weed_id,
+                        task.getRobotModel()
+                            ->getJointModelGroup(hand_group_name)
+                            ->getLinkModelNamesWithCollisionGeometry(),
+                        true);
+                    
                     stage_pull_weed->insert(std::move(stage));
 
                 }
@@ -310,6 +327,24 @@ namespace move_loop
                     wrapper->properties().configureInitFrom(mtc::Stage::INTERFACE, { "target_pose" });
                     stage_pull_weed->insert(std::move(wrapper));
 
+                }
+
+                {
+                    /****************************************
+                    *           Forbid collision            *
+                    ****************************************/ 
+                   
+                    /*
+                    auto stage =
+                        std::make_unique<mtc::stages::ModifyPlanningScene>("forbid collision (hand,object)");
+                    stage->allowCollisions(weed_id, // again how does this work with vector
+                                        task.getRobotModel()
+                                            ->getJointModelGroup(hand_group_name)
+                                            ->getLinkModelNamesWithCollisionGeometry(),
+                                        false);
+                    stage_pull_weed->insert(std::move(stage));
+                    */
+                    
                 }
 
                 {
@@ -378,6 +413,7 @@ namespace move_loop
             {
                 std::stringstream ss;
                 ss << "dump_weed_" << i;
+                s = ss.str();
                 auto stage_drop_weed = std::make_unique<mtc::SerialContainer>(s);
                 task.properties().exposeTo(stage_drop_weed->properties(), { "eef", "group", "ik_frame" });
                 stage_drop_weed->properties().configureInitFrom(mtc::Stage::PARENT,{ "eef", "group", "ik_frame" });
@@ -397,6 +433,8 @@ namespace move_loop
                     /****************************************
                     *           Forbid collision            *
                     ****************************************/ 
+                   
+                    
                     auto stage =
                         std::make_unique<mtc::stages::ModifyPlanningScene>("forbid collision (hand,object)");
                     stage->allowCollisions(weed_id, // again how does this work with vector
@@ -405,7 +443,10 @@ namespace move_loop
                                             ->getLinkModelNamesWithCollisionGeometry(),
                                         false);
                     stage_drop_weed->insert(std::move(stage));
+                    
                 }
+
+                
 
                 {
 
@@ -416,6 +457,16 @@ namespace move_loop
                     stage->detachObject(weed_id, hand_frame); // again how does this work with vector
                     stage_drop_weed->insert(std::move(stage));
 
+                }
+
+                {
+                    /****************************************
+                    *           Remove object               *
+                    ****************************************/ 
+
+                    auto stage = std::make_unique<mtc::stages::ModifyPlanningScene>("remove object");
+                    stage->removeObject(weed_id);
+                    stage_drop_weed->insert(std::move(stage));
                 }
 
                 {
@@ -444,6 +495,24 @@ namespace move_loop
 
             }
 
+            /****************************************************
+            *                                                   *
+            *                  Move to home                     *
+            *                                                   *
+            ****************************************************/
+            
+            ss.str("");
+            //std::stringstream ss;
+            ss << "move_to_home_" << i;
+            s = ss.str();
+
+            auto stage_move_to_home =
+                std::make_unique<mtc::stages::MoveTo>(s, interpolation_planner);
+            stage_move_to_home->properties().configureInitFrom(mtc::Stage::PARENT, { "group" });
+            stage_move_to_home->setGoal("home");
+            // update current stage pointer => Important update the pointer to the scene at the end of each iteration, since the scenes change 
+            current_state_ptr = stage_move_to_home.get();
+            task.add(std::move(stage_move_to_home));  
         }
 
         return task;
