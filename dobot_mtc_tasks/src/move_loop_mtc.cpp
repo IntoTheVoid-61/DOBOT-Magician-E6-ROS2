@@ -123,6 +123,54 @@ namespace move_loop
 
         moveit::planning_interface::PlanningSceneInterface psi;
 
+        // Collision planes
+        moveit_msgs::msg::CollisionObject ground_plane;
+        ground_plane.id = node_->get_parameter("collision_planes.ground_plane.id").as_string();
+        ground_plane.header.frame_id = node_->get_parameter("collision_planes.ground_plane.frame_id").as_string();
+        ground_plane.primitives.resize(1);
+        ground_plane.primitives[0].type = shape_msgs::msg::SolidPrimitive::BOX;
+        ground_plane.primitives[0].dimensions = {
+            node_->get_parameter("collision_planes.ground_plane.dimensions.x").as_double(),
+            node_->get_parameter("collision_planes.ground_plane.dimensions.y").as_double(),
+            node_->get_parameter("collision_planes.ground_plane.dimensions.z").as_double()
+        };
+
+        ground_plane.pose.position.x = node_->get_parameter("collision_planes.ground_plane.pose.position.x").as_double();
+        ground_plane.pose.position.y = node_->get_parameter("collision_planes.ground_plane.pose.position.y").as_double();
+        ground_plane.pose.position.z = node_->get_parameter("collision_planes.ground_plane.pose.position.z").as_double();
+
+        ground_plane.pose.orientation.x = node_->get_parameter("collision_planes.ground_plane.pose.orientation.x").as_double();
+        ground_plane.pose.orientation.y = node_->get_parameter("collision_planes.ground_plane.pose.orientation.y").as_double();
+        ground_plane.pose.orientation.z = node_->get_parameter("collision_planes.ground_plane.pose.orientation.z").as_double();
+        ground_plane.pose.orientation.w = node_->get_parameter("collision_planes.ground_plane.pose.orientation.w").as_double();
+
+        psi.applyCollisionObject(ground_plane);
+
+
+        moveit_msgs::msg::CollisionObject farmbeast_plane;
+        farmbeast_plane.id = node_->get_parameter("collision_planes.farmbeast_plane.id").as_string();
+        farmbeast_plane.header.frame_id = node_->get_parameter("collision_planes.farmbeast_plane.frame_id").as_string();
+        farmbeast_plane.primitives.resize(1);
+        farmbeast_plane.primitives[0].type = shape_msgs::msg::SolidPrimitive::BOX;
+        farmbeast_plane.primitives[0].dimensions = {
+            node_->get_parameter("collision_planes.farmbeast_plane.dimensions.x").as_double(),
+            node_->get_parameter("collision_planes.farmbeast_plane.dimensions.y").as_double(),
+            node_->get_parameter("collision_planes.farmbeast_plane.dimensions.z").as_double(),
+        };
+
+        farmbeast_plane.pose.position.x = node_->get_parameter("collision_planes.farmbeast_plane.pose.position.x").as_double();
+        farmbeast_plane.pose.position.y = node_->get_parameter("collision_planes.farmbeast_plane.pose.position.y").as_double();
+        farmbeast_plane.pose.position.z = node_->get_parameter("collision_planes.farmbeast_plane.pose.position.z").as_double();
+
+        farmbeast_plane.pose.orientation.x = node_->get_parameter("collision_planes.farmbeast_plane.pose.orientation.x").as_double();
+        farmbeast_plane.pose.orientation.y = node_->get_parameter("collision_planes.farmbeast_plane.pose.orientation.y").as_double();
+        farmbeast_plane.pose.orientation.z = node_->get_parameter("collision_planes.farmbeast_plane.pose.orientation.z").as_double();
+        farmbeast_plane.pose.orientation.w = node_->get_parameter("collision_planes.farmbeast_plane.pose.orientation.w").as_double();
+
+        psi.applyCollisionObject(farmbeast_plane);
+
+
+
         std::vector<moveit_msgs::msg::CollisionObject> weed_objects;
         weed_objects.clear();
         weed_objects.resize(num_of_weeds_);
