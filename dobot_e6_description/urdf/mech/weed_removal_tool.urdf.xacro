@@ -19,7 +19,7 @@
             <collision>
                 <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
                 <geometry>
-                    <mesh filename="file://$(find dobot_e6_description)/meshes/weed_removal_tool/visual/gripper_housing.STL" />
+                    <mesh filename="file://$(find dobot_e6_description)/meshes/weed_removal_tool/visual/gripper_housing.STL" scale="1.05 1.05 1.05"/>
                 </geometry>
             </collision>
         </link>
@@ -42,7 +42,7 @@
             <collision>
                 <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
                 <geometry>
-                    <mesh filename="file://$(find dobot_e6_description)/meshes/weed_removal_tool/visual/blade_left.STL" />
+                    <mesh filename="file://$(find dobot_e6_description)/meshes/weed_removal_tool/visual/blade_left.STL" scale="1.05 1.05 1.05"/>
                 </geometry>
             </collision>
         </link>
@@ -65,7 +65,7 @@
             <collision>
                 <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
                 <geometry>
-                    <mesh filename="file://$(find dobot_e6_description)/meshes/weed_removal_tool/visual/blade_right.STL" />
+                    <mesh filename="file://$(find dobot_e6_description)/meshes/weed_removal_tool/visual/blade_right.STL" scale="1.05 1.05 1.05"/>
                 </geometry>
             </collision>
         </link>
