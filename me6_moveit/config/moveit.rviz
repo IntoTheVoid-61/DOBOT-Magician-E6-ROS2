@@ -5,8 +5,8 @@ Panels:
     Property Tree Widget:
       Expanded:
         - /MotionPlanning1
+        - /MotionPlanning1/Planned Path1
         - /Image1
-        - /Image1/Status1
         - /Image1/Topic1
       Splitter Ratio: 0.5
     Tree Height: 502
@@ -131,7 +131,7 @@ Visualization Manager:
             Alpha: 1
             Show Axes: false
             Show Trail: false
-        Loop Animation: true
+        Loop Animation: false
         Robot Alpha: 0.5
         Robot Color: 150; 50; 150
         Show Robot Collision: false
