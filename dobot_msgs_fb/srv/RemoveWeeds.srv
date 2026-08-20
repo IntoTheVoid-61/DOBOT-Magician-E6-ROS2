@@ -1,0 +1,8 @@
+# Request
+
+---
+# Response
+bool response 
+string message
+float64[] weeds # [x1,y1,z1,...,xn,yn,zn]
+float64[] asparagus # [x1,y1,z1,h1,r1,x2,...,xn,yn,zn,rn,hn]
