@@ -43,7 +43,10 @@ setup(
             'test_detekcija=perception.test:main',
             'test_service_client=perception.test_service_client:main',
             'perception_asp=perception.publisher_node_object:main',
-            'perception_avoid=perception.publisher_avoid:main'
+            'perception_avoid=perception.publisher_avoid:main',
+            'perception_avoid_loop=perception.publisher_avoid_loop:main',
+            'perception_avoid_loop_v2=perception.publisher_avoid_loop_v2:main',
+            'perception_pick_up_weeds=perception.publisher_pick_up_weeds:main'
         ],
     },
 )

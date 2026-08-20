@@ -32,8 +32,24 @@ add_executable(avoid_remove_weed_mtc src/avoid_remove_weed_mtc.cpp)
 # add executable
 add_executable(move_loop_mtc src/move_loop_mtc.cpp)
 
+# add executable
+add_executable(avoid_remove_weed_loop_mtc src/avoid_remove_weed_loop_mtc.cpp)
+
+# add executable
+add_executable(pick_up_weeds_mtc src/pick_up_weeds_mtc.cpp)
+
 # include directory for avoid_remove_weed_mtc
 target_include_directories(avoid_remove_weed_mtc PUBLIC
+  ${CMAKE_CURRENT_SOURCE_DIR}/include
+)
+
+# include directory for avoid_remove_weed_loop_mtc
+target_include_directories(avoid_remove_weed_loop_mtc PUBLIC
+  ${CMAKE_CURRENT_SOURCE_DIR}/include
+)
+
+# include directory for avoid_remove_weed_loop_mtc
+target_include_directories(pick_up_weeds_mtc PUBLIC
   ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 
@@ -66,9 +82,23 @@ ament_target_dependencies(move_loop_mtc
   rclcpp
 )
 
+# specify dependencies for avoid_remove_weed_loop_mtc
+ament_target_dependencies(avoid_remove_weed_loop_mtc
+  moveit_task_constructor_core
+  rclcpp
+  dobot_msgs_fb
+)
+
+# specify dependencies for avoid_remove_weed_loop_mtc
+ament_target_dependencies(pick_up_weeds_mtc
+  moveit_task_constructor_core
+  rclcpp
+  dobot_msgs_fb
+)
+
 # Install the executable for approach_mtc
 install(TARGETS
-  approach_mtc remove_weed_mtc avoid_remove_weed_mtc move_loop_mtc
+  approach_mtc remove_weed_mtc avoid_remove_weed_mtc move_loop_mtc avoid_remove_weed_loop_mtc pick_up_weeds_mtc
   DESTINATION lib/${PROJECT_NAME}
 )
 
