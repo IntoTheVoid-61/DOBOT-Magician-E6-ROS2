@@ -427,6 +427,24 @@ namespace pick_up_weeds
 
             {
                 /****************************************
+                *   Allow Collision gripper-ground      *
+                ****************************************/
+
+                auto stage = 
+                    std::make_unique<mtc::stages::ModifyPlanningScene>("allow collision (gripper, ground)");
+                    stage->allowCollisions(node_->get_parameter("collision_planes.ground_plane.id").as_string(),
+                                                            task.getRobotModel()
+                                                                //->getJointModelGroup(hand_group_name) // disabled since it reports collision (it should not)
+                                                                ->getLinkModelNamesWithCollisionGeometry(),
+                                                            true);
+                stage_pull_weed->insert(std::move(stage));
+
+
+            }
+
+            {
+
+                /****************************************
                 *             Move relative             *
                 ****************************************/
 
@@ -463,7 +481,22 @@ namespace pick_up_weeds
                 stage_pull_weed->insert(std::move(stage));
 
             }
+            /*
+            {
+                // gripper ground
 
+                auto stage = 
+                    std::make_unique<mtc::stages::ModifyPlanningScene>("allow collision (gripper, ground)");
+                    stage->allowCollisions(node_->get_parameter("collision_planes.ground_plane.id").as_string(),
+                                                            task.getRobotModel()
+                                                                //->getJointModelGroup(hand_group_name) // disabled since it reports collision (it should not)
+                                                                ->getLinkModelNamesWithCollisionGeometry(),
+                                                            true);
+                stage_pull_weed->insert(std::move(stage));
+
+
+            }
+            */
             {
                 /****************************************
                 *          Generate grasp pose          *
@@ -530,6 +563,25 @@ namespace pick_up_weeds
                 vec.vector.y = -1.0;
                 stage->setDirection(vec);
                 stage_pull_weed->insert(std::move(stage));
+            }
+
+
+
+            {
+                /****************************************
+                *   Disallow Collision gripper-ground      *
+                ****************************************/
+
+                auto stage = 
+                    std::make_unique<mtc::stages::ModifyPlanningScene>("allow collision (gripper, ground)");
+                    stage->allowCollisions(node_->get_parameter("collision_planes.ground_plane.id").as_string(),
+                                                            task.getRobotModel()
+                                                                //->getJointModelGroup(hand_group_name) // disabled since it reports collision (it should not)
+                                                                ->getLinkModelNamesWithCollisionGeometry(),
+                                                            false);
+                stage_pull_weed->insert(std::move(stage));
+
+
             }
 
             task.add(std::move(stage_pull_weed));
